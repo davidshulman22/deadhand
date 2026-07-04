@@ -1,0 +1,10 @@
+{
+  "name": "DEADHAND — a probate deckbuilder",
+  "short_name": "DEADHAND",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#123227",
+  "theme_color": "#123227",
+  "start_url": ".",
+  "icons": [{ "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }]
+}
