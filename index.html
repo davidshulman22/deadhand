@@ -1,0 +1,893 @@
+<title>DEADHAND — a probate deckbuilder</title>
+<style>
+:root{
+  --felt:#123227; --felt-hi:#1a4636; --rail:#0c241c;
+  --manila:#ecdfbc; --manila-hi:#f6ecd2; --manila-tab:#d9c48f; --manila-edge:#b89f66;
+  --ink:#241f19; --ink-soft:#5c5344;
+  --chips:#4a8fd4; --mult:#d64533; --gold:#dfa93f; --good:#5cb87a;
+  --paper:#f2ead6;
+  --suit-P:#3d332a; --suit-T:#2f6fae; --suit-G:#7a4fa3; --suit-L:#bf3a2b;
+  --disp:"Avenir Next Condensed","HelveticaNeue-CondensedBold","Arial Narrow",Arial,sans-serif;
+  --body:"Avenir Next","Helvetica Neue",-apple-system,Segoe UI,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:radial-gradient(1200px 800px at 50% 30%, var(--felt-hi), var(--felt) 70%);
+  color:var(--paper); font-family:var(--body); font-size:14px;
+  overflow-x:hidden; -webkit-font-smoothing:antialiased; user-select:none;
+}
+#app{display:flex; min-height:100vh; max-width:1180px; margin:0 auto; gap:14px; padding:14px}
+button{font-family:inherit; cursor:pointer}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* ============ left rail ============ */
+#rail{width:218px; flex:0 0 218px; display:flex; flex-direction:column; gap:10px}
+.panel{background:var(--rail); border:1px solid rgba(255,255,255,.07); border-radius:8px; padding:10px 12px}
+.panel h3{font-family:var(--disp); font-weight:700; text-transform:uppercase; letter-spacing:.12em; font-size:11px; color:rgba(242,234,214,.55); margin-bottom:6px}
+#brand{font-family:var(--disp); font-weight:800; letter-spacing:.06em; font-size:26px; line-height:1; color:var(--paper)}
+#brand small{display:block; font-family:var(--body); font-weight:500; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin-top:4px}
+#blindName{font-family:var(--disp); font-weight:700; font-size:19px; letter-spacing:.03em}
+#blindTag{display:inline-block; font-size:10px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; padding:2px 7px; border-radius:3px; margin-bottom:5px}
+.tag-small{background:#2c5d8f; color:#dcecfa} .tag-big{background:#8a6a1e; color:#fbeecb} .tag-boss{background:#8f2c22; color:#fadcd8}
+#blindDesc{font-size:11.5px; color:rgba(242,234,214,.72); margin-top:5px; line-height:1.45}
+#targetRow{display:flex; justify-content:space-between; align-items:baseline; margin-top:8px}
+#target{font-size:22px; font-weight:700; color:var(--gold)}
+#scoreNow{font-size:30px; font-weight:800; color:var(--paper); letter-spacing:-.01em}
+#scoreBar{height:6px; background:rgba(0,0,0,.4); border-radius:3px; margin-top:6px; overflow:hidden}
+#scoreFill{height:100%; width:0%; background:linear-gradient(90deg,var(--chips),var(--good)); border-radius:3px; transition:width .4s ease}
+.stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.stat{background:rgba(0,0,0,.25); border-radius:6px; padding:7px 9px}
+.stat .lbl{font-size:9.5px; letter-spacing:.13em; text-transform:uppercase; color:rgba(242,234,214,.5)}
+.stat .val{font-size:20px; font-weight:700; margin-top:1px}
+.val.filings{color:var(--chips)} .val.discards{color:var(--mult)} .val.money{color:var(--gold)} .val.ante{color:var(--paper)}
+#paytable{font-size:11px; line-height:1.7}
+#paytable .row{display:flex; justify-content:space-between; gap:6px; padding:0 2px; border-radius:3px}
+#paytable .row.active{background:rgba(223,169,63,.18); outline:1px solid rgba(223,169,63,.4)}
+#paytable .hn{color:rgba(242,234,214,.85)}
+#paytable .hv{color:rgba(242,234,214,.55)}
+#paytable .hv b{color:var(--chips); font-weight:600} #paytable .hv i{color:var(--mult); font-style:normal; font-weight:600}
+#deckCount{font-size:11px; color:rgba(242,234,214,.5); margin-top:2px}
+.railbtns{display:flex; gap:6px}
+.railbtns button{flex:1; background:rgba(0,0,0,.3); color:rgba(242,234,214,.7); border:1px solid rgba(255,255,255,.1); border-radius:5px; padding:5px 0; font-size:11px; letter-spacing:.06em}
+.railbtns button:hover{color:var(--paper); border-color:rgba(255,255,255,.3)}
+
+/* ============ main ============ */
+#main{flex:1; display:flex; flex-direction:column; gap:10px; min-width:0}
+
+/* jokers */
+#jokerZone{display:flex; align-items:stretch; gap:8px; min-height:118px}
+#jokerRow{display:flex; gap:8px; flex:1}
+.joker{
+  width:118px; min-height:112px; background:linear-gradient(175deg,var(--manila-hi),var(--manila));
+  border:1px solid var(--manila-edge); border-radius:7px; color:var(--ink);
+  padding:8px 9px; position:relative; cursor:pointer; flex:0 0 118px;
+  box-shadow:0 3px 8px rgba(0,0,0,.35); transition:transform .12s ease;
+}
+.joker:hover{transform:translateY(-3px)}
+.joker.sel{outline:3px solid var(--gold); transform:translateY(-5px)}
+.joker .jname{font-family:var(--disp); font-weight:700; font-size:13.5px; letter-spacing:.02em; line-height:1.1}
+.joker .jeff{font-size:10px; line-height:1.35; margin-top:4px; color:#463d2f}
+.joker .jeff b{color:var(--chips)} .joker .jeff i{color:var(--mult); font-style:normal; font-weight:700} .joker .jeff u{color:var(--gold); text-decoration:none; font-weight:700}
+.joker .jflav{font-size:8.5px; font-style:italic; color:#8a7d61; margin-top:4px; line-height:1.3}
+.joker .jcounter{position:absolute; top:5px; right:6px; font-family:var(--mono); font-size:10px; background:var(--mult); color:#fff; border-radius:3px; padding:1px 4px}
+.joker.flash{animation:jflash .35s ease}
+@keyframes jflash{0%{transform:translateY(-2px) scale(1)} 40%{transform:translateY(-8px) scale(1.07); box-shadow:0 8px 18px rgba(0,0,0,.5)} 100%{transform:translateY(-2px) scale(1)}}
+.jslot-empty{width:118px; flex:0 0 118px; border:1.5px dashed rgba(255,255,255,.16); border-radius:7px; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.25); font-size:10px; letter-spacing:.1em; text-transform:uppercase}
+#jokerHint{font-size:10px; color:rgba(242,234,214,.45); align-self:flex-end; text-align:right; max-width:110px; line-height:1.5}
+
+/* play area */
+#playZone{flex:1; min-height:190px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; position:relative}
+#playedRow{display:flex; gap:10px; min-height:120px; align-items:center}
+#tallyLine{font-family:var(--disp); font-weight:700; font-size:22px; letter-spacing:.02em; min-height:30px; display:flex; align-items:center; gap:10px}
+#tallyLine .tchips{color:var(--chips)} #tallyLine .tmult{color:var(--mult)} #tallyLine .ttotal{color:var(--gold); font-size:28px}
+#tallyLine .tx{color:rgba(242,234,214,.4); font-size:16px}
+#bossBanner{position:absolute; top:2px; left:50%; transform:translateX(-50%) rotate(-1.5deg); background:#8f2c22; color:#fff; font-family:var(--disp); font-weight:700; letter-spacing:.14em; text-transform:uppercase; font-size:11px; padding:4px 14px; border-radius:2px; box-shadow:0 3px 8px rgba(0,0,0,.4); display:none}
+
+/* preview strip */
+#preview{
+  align-self:center; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.1);
+  border-radius:7px; padding:7px 16px; font-family:var(--disp); font-weight:700; font-size:17px;
+  letter-spacing:.02em; display:flex; align-items:baseline; gap:9px; min-height:36px;
+}
+#preview .pname{color:var(--paper)}
+#preview .pchips{color:var(--chips)} #preview .pmult{color:var(--mult)} #preview .peq{color:rgba(242,234,214,.4); font-size:13px}
+#preview .ptotal{color:var(--gold); font-size:20px}
+#preview .pidle{color:rgba(242,234,214,.35); font-size:12px; font-family:var(--body); font-weight:400}
+
+/* hand */
+#handZone{display:flex; flex-direction:column; gap:10px; padding-bottom:6px}
+#handRow{display:flex; gap:8px; justify-content:center; min-height:132px}
+.card{
+  width:88px; height:124px; flex:0 0 88px; position:relative; cursor:pointer;
+  transition:transform .13s ease, box-shadow .13s ease;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.4));
+}
+.card .folder{
+  position:absolute; inset:0; top:9px; background:linear-gradient(178deg,var(--manila-hi),var(--manila) 60%);
+  border:1px solid var(--manila-edge); border-radius:5px; color:var(--ink);
+}
+.card .tab{
+  position:absolute; top:0; left:7px; width:38px; height:16px; background:var(--manila-tab);
+  border:1px solid var(--manila-edge); border-bottom:none; border-radius:4px 4px 0 0;
+  font-size:7.5px; letter-spacing:.08em; text-transform:uppercase; color:#6d5f43;
+  display:flex; align-items:center; justify-content:center; font-weight:600;
+}
+.card .rank{position:absolute; top:16px; left:9px; font-family:var(--disp); font-weight:800; font-size:26px; line-height:1}
+.card .rname{position:absolute; top:44px; left:9px; right:8px; font-size:8px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-soft); font-weight:600}
+.card .seal{
+  position:absolute; bottom:8px; right:8px; width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-family:var(--disp); font-weight:800; font-size:15px; color:#fff;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);
+}
+.card .cchip{position:absolute; bottom:11px; left:9px; font-family:var(--mono); font-size:9.5px; color:#7a6c4e}
+.card.sel{transform:translateY(-16px)}
+.card.sel .folder{outline:2.5px solid var(--gold)}
+.card.debuffed .folder{background:#a89f8d; filter:grayscale(.7)}
+.card.debuffed::after{content:"DEBUFFED"; position:absolute; top:52px; left:50%; transform:translateX(-50%) rotate(-12deg); font-size:8px; font-weight:800; letter-spacing:.1em; color:#8f2c22; border:1.5px solid #8f2c22; padding:1px 4px; border-radius:2px; background:rgba(255,255,255,.65)}
+.card.eaten::after{content:"EATEN BY DROPBOX"; position:absolute; top:50px; left:50%; transform:translateX(-50%) rotate(-10deg); font-size:6.5px; font-weight:800; letter-spacing:.08em; color:#8f2c22; border:1.5px solid #8f2c22; padding:1px 3px; border-radius:2px; background:rgba(255,255,255,.75); white-space:nowrap}
+.card.scoring{animation:cardpop .32s ease}
+@keyframes cardpop{0%{transform:translateY(0)} 45%{transform:translateY(-14px) scale(1.08)} 100%{transform:translateY(0)}}
+.popup{
+  position:absolute; top:-14px; left:50%; transform:translateX(-50%);
+  font-family:var(--disp); font-weight:800; font-size:15px; pointer-events:none;
+  animation:popfloat .7s ease forwards; white-space:nowrap; z-index:5;
+}
+.popup.pc{color:var(--chips); text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.popup.pm{color:#ff8d7e; text-shadow:0 1px 3px rgba(0,0,0,.6)}
+@keyframes popfloat{0%{opacity:0; transform:translateX(-50%) translateY(4px)} 20%{opacity:1} 100%{opacity:0; transform:translateX(-50%) translateY(-22px)}}
+
+/* action bar */
+#actions{display:flex; justify-content:center; align-items:center; gap:10px}
+.abtn{
+  font-family:var(--disp); font-weight:700; letter-spacing:.08em; text-transform:uppercase; font-size:15px;
+  padding:11px 26px; border-radius:7px; border:none; color:#fff;
+  box-shadow:0 3px 0 rgba(0,0,0,.35); transition:transform .08s;
+}
+.abtn:active{transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.35)}
+.abtn:disabled{opacity:.35; cursor:default}
+#btnPlay{background:linear-gradient(180deg,#4a8fd4,#33689f)}
+#btnDiscard{background:linear-gradient(180deg,#d64533,#a03225)}
+.sbtn{background:rgba(0,0,0,.3); color:rgba(242,234,214,.7); border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:8px 12px; font-size:11px; letter-spacing:.05em}
+.sbtn:hover{color:var(--paper)}
+#keyhint{text-align:center; font-size:10.5px; color:rgba(242,234,214,.38); letter-spacing:.04em}
+
+/* ============ shop ============ */
+#shop{display:none; flex-direction:column; gap:14px; align-items:center; padding-top:8px}
+#shop h2{font-family:var(--disp); font-weight:800; font-size:26px; letter-spacing:.05em; text-transform:uppercase}
+#shop h2 span{color:var(--gold)}
+#shopMsg{font-size:12px; color:rgba(242,234,214,.6); margin-top:-8px}
+#shopRow{display:flex; gap:14px; min-height:170px}
+.offer{display:flex; flex-direction:column; align-items:center; gap:8px}
+.offer .joker{width:132px; flex-basis:132px; min-height:126px}
+.offer .price{font-family:var(--disp); font-weight:700; font-size:16px; color:var(--gold)}
+.offer .buy{background:linear-gradient(180deg,#dfa93f,#b07f22); border:none; color:#241f19; font-weight:700; font-family:var(--disp); letter-spacing:.06em; padding:7px 22px; border-radius:6px; font-size:13px; box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.offer .buy:disabled{opacity:.4}
+.offer.sold .joker{opacity:.25}
+#shopBtns{display:flex; gap:10px}
+
+/* ============ overlays ============ */
+.overlay{position:fixed; inset:0; background:rgba(6,20,15,.88); display:none; align-items:center; justify-content:center; z-index:50}
+.overlay.show{display:flex}
+.obox{background:var(--rail); border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:28px 34px; max-width:560px; width:92%; max-height:88vh; overflow-y:auto}
+.obox h2{font-family:var(--disp); font-weight:800; font-size:30px; letter-spacing:.04em; margin-bottom:10px}
+.obox p{font-size:13px; line-height:1.6; color:rgba(242,234,214,.8); margin-bottom:10px}
+.obox .big{font-family:var(--disp); font-size:52px; font-weight:800; color:var(--gold); letter-spacing:.02em; margin:6px 0 14px}
+.obox table{width:100%; border-collapse:collapse; font-size:12px; margin:8px 0 14px}
+.obox td{padding:3px 6px; border-bottom:1px solid rgba(255,255,255,.06)}
+.obox td:last-child{text-align:right; font-family:var(--mono); color:rgba(242,234,214,.65)}
+.obox td b{color:var(--chips)} .obox td i{color:var(--mult); font-style:normal}
+.obox .keys{font-family:var(--mono); font-size:11.5px; line-height:1.9; color:rgba(242,234,214,.7)}
+.obox .keys b{color:var(--gold); display:inline-block; min-width:64px}
+kbd{background:rgba(255,255,255,.1); border-radius:3px; padding:1px 5px; font-family:var(--mono); font-size:10.5px}
+.naneinf{font-family:var(--mono); font-size:44px; font-weight:700; color:var(--good); animation:naneglitch 1.2s steps(2) infinite}
+@keyframes naneglitch{0%{opacity:1; letter-spacing:.02em} 50%{opacity:.75; letter-spacing:.1em; color:var(--chips)} 100%{opacity:1}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important; transition-duration:.01ms !important}
+}
+@media (max-width:900px){
+  #app{flex-direction:column} #rail{width:100%; flex:none; flex-direction:row; flex-wrap:wrap}
+  #rail .panel{flex:1; min-width:160px}
+  .card{width:64px; flex-basis:64px; height:100px}
+  .card .rank{font-size:19px} .joker{width:100px; flex-basis:100px}
+}
+</style>
+
+<div id="app">
+  <div id="rail">
+    <div class="panel">
+      <div id="brand">DEADHAND<small>a probate deckbuilder</small></div>
+    </div>
+    <div class="panel">
+      <span id="blindTag" class="tag-small">Filing fee</span>
+      <div id="blindName">The Filing Fee</div>
+      <div id="blindDesc"></div>
+      <div id="targetRow"><span style="font-size:11px;color:rgba(242,234,214,.5)">OVERHEAD</span><span id="target" class="num">200</span></div>
+      <div style="margin-top:6px"><span style="font-size:11px;color:rgba(242,234,214,.5)">BILLED</span></div>
+      <div id="scoreNow" class="num">0</div>
+      <div id="scoreBar"><div id="scoreFill"></div></div>
+    </div>
+    <div class="panel stat-grid" style="display:grid">
+      <div class="stat"><div class="lbl">Filings</div><div class="val filings num" id="stFilings">4</div></div>
+      <div class="stat"><div class="lbl">Discards</div><div class="val discards num" id="stDiscards">3</div></div>
+      <div class="stat"><div class="lbl">Retainer</div><div class="val money num" id="stMoney">$4</div></div>
+      <div class="stat"><div class="lbl">Ante</div><div class="val ante num" id="stAnte">1/8</div></div>
+    </div>
+    <div class="panel">
+      <h3>Fee schedule</h3>
+      <div id="paytable"></div>
+      <div id="deckCount" class="num"></div>
+    </div>
+    <div class="panel railbtns" style="display:flex">
+      <button id="btnHelp">? Rules</button>
+      <button id="btnMute">Sound: on</button>
+      <button id="btnNew">New run</button>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="gamewrap" style="display:flex;flex-direction:column;gap:10px;flex:1">
+      <div id="jokerZone">
+        <div id="jokerRow"></div>
+        <div id="jokerHint">click counsel → <kbd>←</kbd><kbd>→</kbd> reorder · <kbd>S</kbd> sell<br>order matters.</div>
+      </div>
+      <div id="playZone">
+        <div id="bossBanner"></div>
+        <div id="playedRow"></div>
+        <div id="tallyLine"></div>
+      </div>
+      <div id="preview"><span class="pidle">select up to 5 case files</span></div>
+      <div id="handZone">
+        <div id="handRow"></div>
+        <div id="actions">
+          <button class="sbtn" id="btnSortR">Sort: value</button>
+          <button class="abtn" id="btnPlay">File it</button>
+          <button class="abtn" id="btnDiscard">Discard</button>
+          <button class="sbtn" id="btnSortS">Sort: matter</button>
+        </div>
+        <div id="keyhint"><kbd>1</kbd>–<kbd>8</kbd> select · <kbd>Enter</kbd> file · <kbd>X</kbd> discard · <kbd>R</kbd> sort value · <kbd>T</kbd> sort matter · <kbd>?</kbd> rules</div>
+      </div>
+    </div>
+
+    <div id="shop">
+      <h2>THE VENDOR HALL <span class="num" id="shopMoney">$4</span></h2>
+      <div id="shopMsg">CLE conference. Exhibitors want your retainer.</div>
+      <div id="shopRow"></div>
+      <div id="ownedWrap" style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(242,234,214,.45)">Your counsel — sell for half, or click one and use ← → to reorder</div>
+        <div id="shopJokers" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"></div>
+      </div>
+      <div id="shopBtns">
+        <button class="sbtn" id="btnReroll">Reroll $2 (E)</button>
+        <button class="abtn" id="btnNext" style="background:linear-gradient(180deg,#5cb87a,#3d8a58)">Next matter (N)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- overlays -->
+<div class="overlay" id="ovHelp">
+  <div class="obox">
+    <h2>DEADHAND</h2>
+    <p>Poker-scored probate. Each round is a <b>blind</b> — the overhead you must bill past. Select up to 5 case files, file them as a hand. <b style="color:var(--chips)">Chips × </b><i style="color:var(--mult);font-style:normal">Mult</i>. Beat the overhead before your filings run out. Every third blind is a <b style="color:#e07a6d">Boss Audit</b> with a rule against you. Survive Ante 8 and the estate closes.</p>
+    <table>
+      <tr><td>Rule Against Perpetuities</td><td>straight flush</td><td><b>100</b> × <i>8</i></td></tr>
+      <tr><td>Dynasty Trust</td><td>four of a kind</td><td><b>60</b> × <i>7</i></td></tr>
+      <tr><td>Full Testate</td><td>full house</td><td><b>40</b> × <i>4</i></td></tr>
+      <tr><td>Pour-Over</td><td>flush</td><td><b>35</b> × <i>4</i></td></tr>
+      <tr><td>Chain of Title</td><td>straight</td><td><b>30</b> × <i>4</i></td></tr>
+      <tr><td>Per Stirpes</td><td>three of a kind</td><td><b>30</b> × <i>3</i></td></tr>
+      <tr><td>Reciprocal Wills</td><td>two pair</td><td><b>20</b> × <i>2</i></td></tr>
+      <tr><td>Codicil</td><td>pair</td><td><b>10</b> × <i>2</i></td></tr>
+      <tr><td>Pro Se</td><td>high card</td><td><b>5</b> × <i>1</i></td></tr>
+    </table>
+    <p>Only the cards that make the hand score. Card chips = face value (A=11, faces=10). Matters: <b style="color:#c9b18a">Probate</b>, <b style="color:#7fb3e0">Trust</b>, <b style="color:#b28ad4">Guardianship</b>, <b style="color:#e0796a">Litigation</b>. The preview strip is <b>exact</b> — it runs the real calculator, jokers included. Counsel (jokers) trigger left to right; order matters.</p>
+    <div class="keys">
+      <b>1–8</b> toggle card &nbsp; <b>Enter</b> file &nbsp; <b>X</b> discard<br>
+      <b>R / T</b> sort by value / matter &nbsp; <b>C</b> clear selection<br>
+      <b>← →</b> reorder selected counsel &nbsp; <b>S</b> sell it<br>
+      <b>N</b> leave shop &nbsp; <b>E</b> reroll &nbsp; <b>M</b> mute &nbsp; <b>?</b> this
+    </div>
+    <p style="margin-top:12px"><button class="abtn" id="btnCloseHelp" style="background:linear-gradient(180deg,#4a8fd4,#33689f)">Back to the desk</button></p>
+  </div>
+</div>
+
+<div class="overlay" id="ovEnd">
+  <div class="obox" id="endBox"></div>
+</div>
+
+<script>
+"use strict";
+/* ================= data ================= */
+const SUITS = [
+  {k:"P", name:"Probate",      color:"var(--suit-P)"},
+  {k:"T", name:"Trust",        color:"var(--suit-T)"},
+  {k:"G", name:"Guardianship", color:"var(--suit-G)"},
+  {k:"L", name:"Litigation",   color:"var(--suit-L)"},
+];
+const RANKS = [
+  {r:2,d:"2",chips:2,n:"Pet trust"},{r:3,d:"3",chips:3,n:"Small claim"},{r:4,d:"4",chips:4,n:"Codicil"},
+  {r:5,d:"5",chips:5,n:"POA"},{r:6,d:"6",chips:6,n:"Health proxy"},{r:7,d:"7",chips:7,n:"Simple will"},
+  {r:8,d:"8",chips:8,n:"RLT"},{r:9,d:"9",chips:9,n:"SNT"},{r:10,d:"10",chips:10,n:"ILIT"},
+  {r:11,d:"J",chips:10,n:"Associate"},{r:12,d:"Q",chips:10,n:"Trustee"},{r:13,d:"K",chips:10,n:"Decedent"},
+  {r:14,d:"A",chips:11,n:"Homestead"},
+];
+const HANDS = {
+  sflush:{name:"Rule Against Perpetuities", chips:100, mult:8},
+  quads:{name:"Dynasty Trust", chips:60, mult:7},
+  full:{name:"Full Testate", chips:40, mult:4},
+  flush:{name:"Pour-Over", chips:35, mult:4},
+  straight:{name:"Chain of Title", chips:30, mult:4},
+  trips:{name:"Per Stirpes", chips:30, mult:3},
+  twopair:{name:"Reciprocal Wills", chips:20, mult:2},
+  pair:{name:"Codicil", chips:10, mult:2},
+  high:{name:"Pro Se", chips:5, mult:1},
+};
+const HAND_ORDER = ["sflush","quads","full","flush","straight","trips","twopair","pair","high"];
+
+const JOKERS = [
+  {id:"calc", name:"The Calculator", price:5,
+   eff:"<i>×1.5 Mult</i>", flav:"“I ran the numbers. It says you are wrong.”"},
+  {id:"paralegal", name:"The Paralegal", price:5,
+   eff:"<i>+4 Mult</i> per Guardianship card scored", flav:"Drafts everything. The attorney of record signs."},
+  {id:"clio", name:"Clio Automation", price:6,
+   eff:"Retriggers the <b>first</b> scored card", flav:"Click2File."},
+  {id:"homestead", name:"Homestead", price:5,
+   eff:"Probate cards give <b>+25 Chips</b> when scored", flav:"Exempt from forced sale. Art. X, §4."},
+  {id:"summary", name:"Summary Admin", price:6,
+   eff:"<i>×3 Mult</i> if filing has 3 or fewer cards", flav:"Under $75k or dead two years. Fast lane."},
+  {id:"precedent", name:"Stare Decisis", price:4,
+   eff:"<i>+2 Mult</i> per consecutive filing of the same hand type", flav:"One strategy. Every game.", counter:true},
+  {id:"iota", name:"IOTA Interest", price:4,
+   eff:"<u>+$2</u> per unused filing at round end", flav:"Trust accounting, but it pays you."},
+  {id:"billable", name:"Billable Hour", price:6,
+   eff:"<i>+1 Mult</i> per $5 in the retainer", flav:"The meter is always running."},
+  {id:"deadhand", name:"Dead Hand", price:5,
+   eff:"Kings give <b>+20 Chips</b>, <i>+2 Mult</i>", flav:"Mortmain. The decedent still controls."},
+  {id:"elective", name:"Elective Share", price:6,
+   eff:"<b>×1.3 Chips</b>", flav:"Thirty percent. Off the top. §732.2065."},
+  {id:"hyperfocus", name:"Hyperfocus", price:7,
+   eff:"<i>×3 Mult</i> on the first filing each round", flav:"It gets done at 11pm and it's brilliant."},
+  {id:"paragon", name:"The Paragon", price:10,
+   eff:"<i>×4 Mult</i>", flav:"You finally had enough gold."},
+  {id:"dr312", name:"DR-312", price:6,
+   eff:"Boss Audit rules are <b>disabled</b>", flav:"No Florida estate tax due. Never is."},
+  {id:"formal", name:"Formal Admin", price:5,
+   eff:"<b>+80 Chips</b> if filing has exactly 5 cards", flav:"Letters of Administration, the long way."},
+];
+
+const BOSSES = [
+  {id:"heir", name:"The Disgruntled Heir", desc:s=>`Cards of one matter type (${s}) are debuffed — no chips, no triggers.`},
+  {id:"f706", name:"Form 706", desc:()=>"Estate tax paperwork: one fewer filing this round."},
+  {id:"sol", name:"Statute of Limitations", desc:()=>"Time bars you: only 1 discard this round."},
+  {id:"dropbox", name:"The Dropbox Conflict", desc:()=>"Every filing, one random scoring card gets eaten."},
+  {id:"objection", name:"Objection, Sustained", desc:()=>"Your first filing scores half."},
+  {id:"auditor", name:"The Auditor", desc:()=>"Overhead is 25% higher. Bring receipts."},
+];
+
+/* ================= state ================= */
+let S = null;
+let animating = false;
+let sortMode = "rank";
+const $ = id => document.getElementById(id);
+
+function newRun(){
+  S = {
+    ante:1, blindIdx:0, money:4, jokers:[], jokerSel:-1,
+    deck:[], hand:[], discardPile:[],
+    filings:4, discards:3, score:0, target:0,
+    boss:null, bossSuit:null, filingsUsed:0,
+    precType:null, precStreak:0,
+    endless:false, roundsWon:0,
+    shopOffers:[], phase:"play",
+  };
+  startRound();
+  render();
+}
+
+function baseTarget(ante){ return Math.round(200 * Math.pow(1.55, ante-1) / 5) * 5; }
+
+function startRound(){
+  const b = baseTarget(S.ante);
+  const mults = [1, 1.5, 2];
+  S.target = Math.round(b * mults[S.blindIdx]);
+  S.boss = null; S.bossSuit = null;
+  S.filings = 4; S.discards = 3; S.score = 0; S.filingsUsed = 0;
+  if (S.blindIdx === 2){
+    S.boss = BOSSES[Math.floor(Math.random()*BOSSES.length)];
+    const dr312 = S.jokers.some(j=>j.id==="dr312");
+    if (!dr312){
+      if (S.boss.id==="heir") S.bossSuit = SUITS[Math.floor(Math.random()*4)];
+      if (S.boss.id==="f706") S.filings = 3;
+      if (S.boss.id==="sol") S.discards = 1;
+      if (S.boss.id==="auditor") S.target = Math.round(S.target*1.25);
+    }
+    S.bossDisabled = dr312;
+  }
+  // fresh deck each round
+  S.deck = [];
+  for (const su of SUITS) for (const rk of RANKS) S.deck.push({suit:su, rank:rk, id:su.k+rk.r});
+  shuffle(S.deck);
+  S.hand = [];
+  drawTo(8);
+  S.phase = "play";
+  clearPlayed();
+}
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} }
+function drawTo(n){ while(S.hand.length<n && S.deck.length) S.hand.push({...S.deck.pop(), sel:false}); sortHand(); }
+function sortHand(){
+  if (sortMode==="rank") S.hand.sort((a,b)=>b.rank.r-a.rank.r || a.suit.k.localeCompare(b.suit.k));
+  else S.hand.sort((a,b)=>a.suit.k.localeCompare(b.suit.k) || b.rank.r-a.rank.r);
+}
+function isDebuffed(c){ return S.bossSuit && c.suit.k===S.bossSuit.k; }
+
+/* ================= hand evaluation ================= */
+function evaluate(cards){
+  const n = cards.length;
+  if (!n) return null;
+  const byRank = {};
+  cards.forEach(c=>{ (byRank[c.rank.r] = byRank[c.rank.r]||[]).push(c); });
+  const groups = Object.values(byRank).sort((a,b)=>b.length-a.length || b[0].rank.r-a[0].rank.r);
+  const isFlush = n===5 && cards.every(c=>c.suit.k===cards[0].suit.k);
+  let isStraight = false;
+  if (n===5){
+    const rs = [...new Set(cards.map(c=>c.rank.r))].sort((a,b)=>a-b);
+    if (rs.length===5){
+      if (rs[4]-rs[0]===4) isStraight = true;
+      if (JSON.stringify(rs)===JSON.stringify([2,3,4,5,14])) isStraight = true;
+    }
+  }
+  let key, scoring;
+  if (isStraight && isFlush){ key="sflush"; scoring=cards; }
+  else if (groups[0].length===4){ key="quads"; scoring=groups[0]; }
+  else if (groups[0].length===3 && groups[1] && groups[1].length>=2){ key="full"; scoring=cards; }
+  else if (isFlush){ key="flush"; scoring=cards; }
+  else if (isStraight){ key="straight"; scoring=cards; }
+  else if (groups[0].length===3){ key="trips"; scoring=groups[0]; }
+  else if (groups[0].length===2 && groups[1] && groups[1].length===2){ key="twopair"; scoring=[...groups[0],...groups[1]]; }
+  else if (groups[0].length===2){ key="pair"; scoring=groups[0]; }
+  else { key="high"; scoring=[cards.reduce((a,b)=>a.rank.r>=b.rank.r?a:b)]; }
+  return {key, def:HANDS[key], scoring};
+}
+
+/* ================= scoring (single source of truth) =================
+   dry=true → no side effects, returns {chips, mult, total, steps}
+   steps: [{type:'card'|'joker', ...}] for animation */
+function computeScore(played, opts){
+  const {dry, eatenId, firstFiling} = opts;
+  const ev = evaluate(played);
+  if (!ev) return null;
+  let chips = ev.def.chips, mult = ev.def.mult;
+  const steps = [];
+  const scoringSet = new Set(ev.scoring.map(c=>c.id));
+  const scoringCards = played.filter(c=>scoringSet.has(c.id));
+  const has = id => S.jokers.some(j=>j.id===id);
+  const jidx = id => S.jokers.findIndex(j=>j.id===id);
+
+  scoringCards.forEach((c, i)=>{
+    if (eatenId && c.id===eatenId){ steps.push({type:"card", card:c, eaten:true}); return; }
+    if (isDebuffed(c)){ steps.push({type:"card", card:c, debuffed:true}); return; }
+    const triggers = 1 + (has("clio") && i===0 ? 1 : 0);
+    for (let t=0; t<triggers; t++){
+      let cCh = c.rank.chips, cMu = 0;
+      if (has("homestead") && c.suit.k==="P") cCh += 25;
+      if (has("paralegal") && c.suit.k==="G") cMu += 4;
+      if (has("deadhand") && c.rank.r===13){ cCh += 20; cMu += 2; }
+      chips += cCh; mult += cMu;
+      steps.push({type:"card", card:c, ch:cCh, mu:cMu, retrig:t>0});
+    }
+  });
+
+  // global jokers in owned order
+  S.jokers.forEach((j, idx)=>{
+    let ch=0, mu=0, xm=1, xc=1, note=null;
+    switch(j.id){
+      case "summary": if (played.length<=3){ xm=3; note="×3 Mult"; } break;
+      case "formal": if (played.length===5){ ch=80; note="+80 Chips"; } break;
+      case "precedent": {
+        const streak = (S.precType===ev.key) ? S.precStreak+1 : 1;
+        const bonus = 2*(streak-1);
+        if (bonus>0){ mu=bonus; note=`+${bonus} Mult`; }
+        break;
+      }
+      case "hyperfocus": if (firstFiling){ xm=3; note="×3 Mult"; } break;
+      case "billable": { const b=Math.floor(S.money/5); if(b>0){ mu=b; note=`+${b} Mult`; } break; }
+      case "calc": xm=1.5; note="×1.5 Mult"; break;
+      case "paragon": xm=4; note="×4 Mult"; break;
+      case "elective": xc=1.3; note="×1.3 Chips"; break;
+    }
+    if (ch||mu||xm!==1||xc!==1){
+      chips = chips*xc + ch;
+      mult = mult*xm + mu;
+      steps.push({type:"joker", idx, name:j.name, note});
+    }
+  });
+
+  chips = Math.round(chips); mult = Math.round(mult*10)/10;
+  let total = Math.floor(chips*mult);
+  let halved = false;
+  if (S.boss && S.boss.id==="objection" && !S.bossDisabled && firstFiling){ total=Math.floor(total/2); halved=true; }
+  if (!dry){
+    if (S.precType===ev.key) S.precStreak++; else { S.precType=ev.key; S.precStreak=1; }
+  }
+  return {ev, chips, mult, total, steps, halved};
+}
+
+/* ================= actions ================= */
+function selected(){ return S.hand.filter(c=>c.sel); }
+
+function toggleCard(i){
+  if (animating || S.phase!=="play") return;
+  const c = S.hand[i]; if(!c) return;
+  if (!c.sel && selected().length>=5){ blip(120); return; }
+  c.sel = !c.sel; blip(c.sel?520:380);
+  render();
+}
+
+async function playHand(){
+  if (animating || S.phase!=="play") return;
+  const sel = selected();
+  if (!sel.length || S.filings<=0) return;
+  animating = true;
+  let eatenId = null;
+  if (S.boss && S.boss.id==="dropbox" && !S.bossDisabled){
+    const ev = evaluate(sel);
+    const pool = ev.scoring;
+    eatenId = pool[Math.floor(Math.random()*pool.length)].id;
+  }
+  const firstFiling = S.filingsUsed===0;
+  const res = computeScore(sel, {dry:false, eatenId, firstFiling});
+  S.filings--; S.filingsUsed++;
+  S.hand = S.hand.filter(c=>!c.sel);
+  await animateScore(sel, res, eatenId);
+  S.score += res.total;
+  clearPlayed();
+  if (S.score >= S.target){ winRound(); animating=false; return; }
+  if (S.filings <= 0){ gameOver(); animating=false; return; }
+  drawTo(8);
+  animating = false;
+  render();
+}
+
+function discardCards(){
+  if (animating || S.phase!=="play") return;
+  const sel = selected();
+  if (!sel.length || S.discards<=0){ blip(120); return; }
+  S.discards--;
+  S.hand = S.hand.filter(c=>!c.sel);
+  drawTo(8);
+  blip(300);
+  render();
+}
+
+function winRound(){
+  const rewardBase = [3,4,5][S.blindIdx];
+  const perFiling = S.filings * 1;
+  const iota = S.jokers.some(j=>j.id==="iota") ? S.filings*2 : 0;
+  const interest = Math.min(5, Math.floor(S.money/5));
+  S.money += rewardBase + perFiling + iota + interest;
+  S.roundsWon++;
+  S.lastReward = {rewardBase, perFiling, iota, interest};
+  // advance
+  S.blindIdx++;
+  if (S.blindIdx>2){ S.blindIdx=0; S.ante++; }
+  if (S.ante>8 && !S.endless){ showWin(); return; }
+  openShop();
+}
+
+function openShop(){
+  S.phase="shop";
+  rollShop();
+  render();
+}
+function rollShop(){
+  const owned = new Set(S.jokers.map(j=>j.id));
+  const pool = JOKERS.filter(j=>!owned.has(j.id));
+  shuffle(pool);
+  S.shopOffers = pool.slice(0,3).map(j=>({...j, sold:false}));
+}
+function buyOffer(i){
+  const o = S.shopOffers[i];
+  if (!o || o.sold) return;
+  if (S.money < o.price || S.jokers.length>=5){ blip(120); return; }
+  S.money -= o.price; o.sold = true;
+  S.jokers.push({...o});
+  blip(700); render();
+}
+function reroll(){
+  if (S.money<2){ blip(120); return; }
+  S.money-=2; rollShop(); blip(440); render();
+}
+function nextRound(){
+  S.phase="play"; startRound(); blip(520); render();
+}
+function sellJoker(){
+  if (S.jokerSel<0 || S.jokerSel>=S.jokers.length) return;
+  const j = S.jokers.splice(S.jokerSel,1)[0];
+  S.money += Math.ceil(j.price/2);
+  S.jokerSel = -1; blip(340); render();
+}
+function moveJoker(d){
+  const i = S.jokerSel; if(i<0) return;
+  const t = i+d; if (t<0||t>=S.jokers.length) return;
+  [S.jokers[i],S.jokers[t]]=[S.jokers[t],S.jokers[i]];
+  S.jokerSel = t; blip(500); render();
+}
+
+function gameOver(){
+  S.phase="over";
+  const best = store();
+  best.runs++;
+  best.bestAnte = Math.max(best.bestAnte, S.ante);
+  save(best);
+  $("endBox").innerHTML = `
+    <h2 style="color:var(--mult)">MOTION DENIED</h2>
+    <p>The overhead won. You billed <b class="num">${fmt(S.score)}</b> of <b class="num">${fmt(S.target)}</b> on Ante ${S.ante}.</p>
+    <p style="color:rgba(242,234,214,.55)">Runs: ${best.runs} · Best ante: ${best.bestAnte} · Estates closed: ${best.wins}</p>
+    <button class="abtn" style="background:linear-gradient(180deg,#4a8fd4,#33689f)" onclick="hideEnd();newRun()">New run (R)</button>`;
+  $("ovEnd").classList.add("show");
+  blip(90); setTimeout(()=>blip(70),150);
+}
+function showWin(){
+  S.phase="won";
+  const best = store(); best.wins++; best.runs++; best.bestAnte=8; save(best);
+  $("endBox").innerHTML = `
+    <h2 style="color:var(--good)">ESTATE CLOSED</h2>
+    <div class="naneinf">naneinf</div>
+    <p>All eight antes discharged. Fees earned: <b class="num" style="color:var(--gold)">$${S.money}</b>. The file goes to the closed drawer, the score overflows, and no further accounting shall be required.</p>
+    <p style="color:rgba(242,234,214,.55)">Estates closed: ${best.wins} · Runs: ${best.runs}</p>
+    <div style="display:flex;gap:10px">
+      <button class="abtn" style="background:linear-gradient(180deg,#5cb87a,#3d8a58)" onclick="hideEnd();goEndless()">Endless (keep going)</button>
+      <button class="abtn" style="background:linear-gradient(180deg,#4a8fd4,#33689f)" onclick="hideEnd();newRun()">New run</button>
+    </div>`;
+  $("ovEnd").classList.add("show");
+  blip(700); setTimeout(()=>blip(880),140); setTimeout(()=>blip(1100),280);
+}
+function goEndless(){ S.endless=true; openShop(); }
+function hideEnd(){ $("ovEnd").classList.remove("show"); }
+window.hideEnd = hideEnd; window.newRun = newRun; window.goEndless = goEndless;
+
+function store(){ try{ return JSON.parse(localStorage.getItem("deadhand"))||{runs:0,wins:0,bestAnte:1}; }catch(e){ return {runs:0,wins:0,bestAnte:1}; } }
+function save(b){ try{ localStorage.setItem("deadhand", JSON.stringify(b)); }catch(e){} }
+
+/* ================= animation ================= */
+const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const wait = ms => new Promise(r=>setTimeout(r, RM?0:ms));
+
+async function animateScore(played, res, eatenId){
+  const row = $("playedRow"); row.innerHTML="";
+  const tally = $("tallyLine");
+  const els = {};
+  played.forEach(c=>{
+    const el = cardEl(c, false);
+    el.classList.remove("sel");
+    if (eatenId && c.id===eatenId) el.classList.add("eaten");
+    row.appendChild(el); els[c.id]=el;
+  });
+  let ch = res.ev.def.chips, mu = res.ev.def.mult;
+  const showTally = (hl)=>{ tally.innerHTML =
+    `<span>${res.ev.def.name}</span><span class="tchips num">${fmt(Math.round(ch))}</span><span class="tx">×</span><span class="tmult num">${mu%1?mu.toFixed(1):mu}</span>${hl||""}`; };
+  showTally();
+  await wait(260);
+  for (const st of res.steps){
+    if (st.type==="card"){
+      const el = els[st.card.id]; if(!el) continue;
+      if (st.eaten || st.debuffed){ await wait(160); continue; }
+      el.classList.remove("scoring"); void el.offsetWidth; el.classList.add("scoring");
+      if (st.ch){ pop(el, `+${st.ch}`, "pc"); ch += st.ch; }
+      if (st.mu){ setTimeout(()=>pop(el, `+${st.mu} Mult`, "pm"), 90); mu += st.mu; }
+      blip(500 + Math.min(600, ch));
+      showTally();
+      await wait(st.retrig?220:200);
+    } else {
+      const jel = document.querySelectorAll("#jokerRow .joker")[st.idx];
+      if (jel){ jel.classList.remove("flash"); void jel.offsetWidth; jel.classList.add("flash");
+        if (st.note) pop(jel, st.note, st.note.includes("Chip")?"pc":"pm"); }
+      ch = null; // recompute from res at end; show live approximation:
+      blip(760);
+      // rebuild from steps is complex; just show final after joker phase
+      ch = res.chips; mu = res.mult; showTally();
+      await wait(260);
+    }
+  }
+  ch = res.chips; mu = res.mult;
+  showTally(`<span class="tx">=</span><span class="ttotal num">${fmt(res.total)}</span>${res.halved?'<span style="font-size:12px;color:#e07a6d">(objection: halved)</span>':""}`);
+  blip(900);
+  await wait(RM?0:820);
+}
+function pop(el, txt, cls){
+  const p = document.createElement("div");
+  p.className = "popup "+cls; p.textContent = txt;
+  el.appendChild(p); setTimeout(()=>p.remove(), 720);
+}
+function clearPlayed(){ $("playedRow").innerHTML=""; $("tallyLine").innerHTML=""; }
+
+/* ================= sound ================= */
+let AC=null, muted=false;
+function blip(f){
+  if (muted) return;
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type="square"; o.frequency.value=f;
+    g.gain.setValueAtTime(.045, AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001, AC.currentTime+.09);
+    o.connect(g); g.connect(AC.destination);
+    o.start(); o.stop(AC.currentTime+.1);
+  }catch(e){}
+}
+
+/* ================= render ================= */
+function fmt(n){ return n.toLocaleString("en-US"); }
+
+function cardEl(c, interactive){
+  const el = document.createElement("div");
+  el.className = "card" + (c.sel?" sel":"") + (isDebuffed(c)?" debuffed":"");
+  el.innerHTML = `
+    <div class="folder">
+      <div class="rank" style="color:${c.suit.color}">${c.rank.d}</div>
+      <div class="rname">${c.rank.n}</div>
+      <div class="cchip">+${c.rank.chips}</div>
+      <div class="seal" style="background:${c.suit.color}">${c.suit.k}</div>
+    </div>
+    <div class="tab">${c.suit.name.slice(0,5)}</div>`;
+  if (interactive) el.addEventListener("click", ()=>toggleCard(S.hand.indexOf(c)));
+  return el;
+}
+
+function render(){
+  const inShop = S.phase==="shop";
+  $("gamewrap").style.display = inShop ? "none":"flex";
+  $("shop").style.display = inShop ? "flex":"none";
+
+  // rail
+  const tags=[["tag-small","Filing fee"],["tag-big","Payroll"],["tag-boss","Boss audit"]];
+  const names=["The Filing Fee","The Payroll","BOSS"];
+  const tagEl = $("blindTag");
+  tagEl.className=""; tagEl.classList.add(tags[S.blindIdx][0]); tagEl.id="blindTag";
+  tagEl.textContent = tags[S.blindIdx][1];
+  $("blindName").textContent = S.boss ? S.boss.name : names[S.blindIdx];
+  $("blindDesc").innerHTML = S.boss
+    ? (S.bossDisabled ? `<s>${S.boss.desc(S.bossSuit?S.bossSuit.name:"")}</s> <b style="color:var(--good)">DR-312 filed. Rule void.</b>`
+                      : S.boss.desc(S.bossSuit?S.bossSuit.name:""))
+    : (S.blindIdx===0 ? "Clerk of Court takes its cut first." : "Payroll clears whether you bill or not.");
+  $("target").textContent = fmt(S.target);
+  $("scoreNow").textContent = fmt(S.score);
+  $("scoreFill").style.width = Math.min(100, 100*S.score/S.target)+"%";
+  $("stFilings").textContent = S.filings;
+  $("stDiscards").textContent = S.discards;
+  $("stMoney").textContent = "$"+S.money;
+  $("stAnte").textContent = S.endless ? S.ante+"/∞" : S.ante+"/8";
+  $("deckCount").textContent = "deck: "+S.deck.length;
+
+  // boss banner
+  const bb = $("bossBanner");
+  if (S.boss && !S.bossDisabled){ bb.style.display="block"; bb.textContent="AUDIT: "+S.boss.name; }
+  else bb.style.display="none";
+
+  // paytable + preview
+  const sel = selected();
+  let activeKey = null, prev = null;
+  if (sel.length){
+    prev = computeScore(sel, {dry:true, eatenId:null, firstFiling:S.filingsUsed===0});
+    activeKey = prev.ev.key;
+  }
+  $("paytable").innerHTML = HAND_ORDER.map(k=>{
+    const h=HANDS[k];
+    return `<div class="row${k===activeKey?" active":""}"><span class="hn">${h.name}</span><span class="hv num"><b>${h.chips}</b>×<i>${h.mult}</i></span></div>`;
+  }).join("");
+  const pv = $("preview");
+  if (prev){
+    pv.innerHTML = `<span class="pname">${prev.ev.def.name}</span>
+      <span class="pchips num">${fmt(prev.chips)}</span><span class="peq">×</span>
+      <span class="pmult num">${prev.mult%1?prev.mult.toFixed(1):prev.mult}</span><span class="peq">=</span>
+      <span class="ptotal num">${fmt(prev.total)}</span>
+      ${prev.halved?'<span style="font-size:11px;color:#e07a6d;font-family:var(--body);font-weight:400">objection: halved</span>':""}
+      ${S.boss&&S.boss.id==="dropbox"&&!S.bossDisabled?'<span style="font-size:11px;color:#e07a6d;font-family:var(--body);font-weight:400">−1 random card</span>':""}`;
+  } else {
+    pv.innerHTML = `<span class="pidle">select up to 5 case files — the calculator shows the exact score, jokers included</span>`;
+  }
+
+  // jokers
+  const jr = $("jokerRow"); jr.innerHTML="";
+  S.jokers.forEach((j,i)=>{
+    const el = document.createElement("div");
+    el.className="joker"+(i===S.jokerSel?" sel":"");
+    el.innerHTML = `<div class="jname">${j.name}</div><div class="jeff">${j.eff}</div><div class="jflav">${j.flav}</div>`
+      + (j.id==="precedent" ? `<div class="jcounter">×${S.precStreak||0}</div>`:"");
+    el.addEventListener("click", ()=>{ S.jokerSel = (S.jokerSel===i? -1 : i); render(); });
+    jr.appendChild(el);
+  });
+  for(let i=S.jokers.length;i<5;i++){
+    const e=document.createElement("div"); e.className="jslot-empty"; e.textContent="of counsel"; jr.appendChild(e);
+  }
+
+  // hand
+  const hr = $("handRow"); hr.innerHTML="";
+  S.hand.forEach(c=>hr.appendChild(cardEl(c, true)));
+  $("btnPlay").disabled = !sel.length || S.filings<=0 || animating;
+  $("btnDiscard").disabled = !sel.length || S.discards<=0 || animating;
+  $("btnPlay").textContent = `File it (${S.filings})`;
+  $("btnDiscard").textContent = `Discard (${S.discards})`;
+
+  // shop
+  if (inShop){
+    $("shopMoney").textContent = "$"+S.money;
+    const lr = S.lastReward;
+    $("shopMsg").innerHTML = lr
+      ? `Round reward: <b class="num" style="color:var(--gold)">$${lr.rewardBase}</b> + $${lr.perFiling} unused filings${lr.iota?` + <b style="color:var(--gold)">$${lr.iota} IOTA</b>`:""} + $${lr.interest} interest. Slots: ${S.jokers.length}/5.`
+      : "CLE conference. Exhibitors want your retainer.";
+    const srow = $("shopRow"); srow.innerHTML="";
+    S.shopOffers.forEach((o,i)=>{
+      const d=document.createElement("div"); d.className="offer"+(o.sold?" sold":"");
+      d.innerHTML = `<div class="joker"><div class="jname">${o.name}</div><div class="jeff">${o.eff}</div><div class="jflav">${o.flav}</div></div>
+        <div class="price num">$${o.price}</div>
+        <button class="buy" ${o.sold||S.money<o.price||S.jokers.length>=5?"disabled":""}>${o.sold?"Sold":"Retain ("+(i+1)+")"}</button>`;
+      d.querySelector(".buy").addEventListener("click", ()=>buyOffer(i));
+      srow.appendChild(d);
+    });
+    const sj = $("shopJokers"); sj.innerHTML="";
+    if (!S.jokers.length){
+      sj.innerHTML = '<div style="font-size:11px;color:rgba(242,234,214,.35)">no counsel retained yet</div>';
+    }
+    S.jokers.forEach((j,i)=>{
+      const d = document.createElement("div"); d.className="offer";
+      const el = document.createElement("div");
+      el.className = "joker"+(i===S.jokerSel?" sel":"");
+      el.innerHTML = `<div class="jname">${j.name}</div><div class="jeff">${j.eff}</div><div class="jflav">${j.flav}</div>`;
+      el.addEventListener("click", ()=>{ S.jokerSel=(S.jokerSel===i?-1:i); render(); });
+      const b = document.createElement("button"); b.className="buy";
+      b.textContent = `Sell $${Math.ceil(j.price/2)}`;
+      b.addEventListener("click", ()=>{ S.jokerSel=i; sellJoker(); });
+      d.appendChild(el); d.appendChild(b); sj.appendChild(d);
+    });
+  }
+}
+
+/* ================= input ================= */
+document.addEventListener("keydown", e=>{
+  if (e.metaKey||e.ctrlKey||e.altKey) return;
+  const k = e.key;
+  if ($("ovHelp").classList.contains("show")){ if(k==="Escape"||k==="?") $("ovHelp").classList.remove("show"); return; }
+  if ($("ovEnd").classList.contains("show")){ if(k==="r"||k==="R"){ hideEnd(); newRun(); } return; }
+  if (S.phase==="shop"){
+    if (k>="1"&&k<="3") buyOffer(+k-1);
+    else if (k==="n"||k==="N") nextRound();
+    else if (k==="e"||k==="E") reroll();
+    else if (k==="m"||k==="M") toggleMute();
+    else if (k==="?") $("ovHelp").classList.add("show");
+    else if (k==="ArrowLeft") moveJoker(-1);
+    else if (k==="ArrowRight") moveJoker(1);
+    else if (k==="s"||k==="S") sellJoker();
+    return;
+  }
+  if (k>="1"&&k<="8") toggleCard(+k-1);
+  else if (k==="Enter"){ e.preventDefault(); playHand(); }
+  else if (k==="x"||k==="X") discardCards();
+  else if (k==="c"||k==="C"){ S.hand.forEach(c=>c.sel=false); render(); }
+  else if (k==="r"||k==="R"){ sortMode="rank"; sortHand(); render(); }
+  else if (k==="t"||k==="T"){ sortMode="suit"; sortHand(); render(); }
+  else if (k==="ArrowLeft") moveJoker(-1);
+  else if (k==="ArrowRight") moveJoker(1);
+  else if (k==="s"||k==="S") sellJoker();
+  else if (k==="m"||k==="M") toggleMute();
+  else if (k==="?") $("ovHelp").classList.add("show");
+});
+function toggleMute(){ muted=!muted; $("btnMute").textContent = "Sound: "+(muted?"off":"on"); }
+
+$("btnPlay").addEventListener("click", playHand);
+$("btnDiscard").addEventListener("click", discardCards);
+$("btnSortR").addEventListener("click", ()=>{ sortMode="rank"; sortHand(); render(); });
+$("btnSortS").addEventListener("click", ()=>{ sortMode="suit"; sortHand(); render(); });
+$("btnHelp").addEventListener("click", ()=>$("ovHelp").classList.add("show"));
+$("btnCloseHelp").addEventListener("click", ()=>$("ovHelp").classList.remove("show"));
+$("btnMute").addEventListener("click", toggleMute);
+$("btnNew").addEventListener("click", newRun);
+$("btnReroll").addEventListener("click", reroll);
+$("btnNext").addEventListener("click", nextRound);
+
+newRun();
+</script>
