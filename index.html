@@ -363,8 +363,8 @@ const JOKERS = [
    eff:"<b>×1.3 Chips</b>", flav:"Thirty percent. Off the top. §732.2065."},
   {id:"hyperfocus", name:"Hyperfocus", price:7,
    eff:"<i>×3 Mult</i> on the first filing each round", flav:"It gets done at 11pm and it's brilliant."},
-  {id:"paragon", name:"The Paragon", price:10,
-   eff:"<i>×4 Mult</i>", flav:"You finally had enough gold."},
+  {id:"feesimple", name:"Fee Simple Absolute", price:10,
+   eff:"<i>×4 Mult</i>", flav:"The highest estate known to law."},
   {id:"dr312", name:"DR-312", price:6,
    eff:"Boss Audit rules are <b>disabled</b>", flav:"No Florida estate tax due. Never is."},
   {id:"formal", name:"Formal Admin", price:5,
@@ -509,7 +509,7 @@ function computeScore(played, opts){
       case "hyperfocus": if (firstFiling){ xm=3; note="×3 Mult"; } break;
       case "billable": { const b=Math.floor(S.money/5); if(b>0){ mu=b; note=`+${b} Mult`; } break; }
       case "calc": xm=1.5; note="×1.5 Mult"; break;
-      case "paragon": xm=4; note="×4 Mult"; break;
+      case "feesimple": xm=4; note="×4 Mult"; break;
       case "elective": xc=1.3; note="×1.3 Chips"; break;
     }
     if (ch||mu||xm!==1||xc!==1){
