@@ -144,6 +144,16 @@ button{font-family:inherit; cursor:pointer}
 .card.debuffed .folder{background:#a89f8d; filter:grayscale(.7)}
 .card.debuffed::after{content:"DEBUFFED"; position:absolute; top:52px; left:50%; transform:translateX(-50%) rotate(-12deg); font-size:8px; font-weight:800; letter-spacing:.1em; color:#8f2c22; border:1.5px solid #8f2c22; padding:1px 4px; border-radius:2px; background:rgba(255,255,255,.65)}
 .card.eaten::after{content:"EATEN BY DROPBOX"; position:absolute; top:50px; left:50%; transform:translateX(-50%) rotate(-10deg); font-size:6.5px; font-weight:800; letter-spacing:.08em; color:#8f2c22; border:1.5px solid #8f2c22; padding:1px 3px; border-radius:2px; background:rgba(255,255,255,.75); white-space:nowrap}
+.card.dealin{animation:dealin .34s cubic-bezier(.2,.8,.3,1.12) backwards}
+@keyframes dealin{from{opacity:0; transform:translateX(72px) translateY(-10px) rotate(5deg)}}
+.card.flyout{animation:flyout .26s ease-in forwards; pointer-events:none}
+@keyframes flyout{to{opacity:0; transform:translateY(110px) rotate(14deg) scale(.92)}}
+.card.liftout{animation:liftout .2s ease-in forwards; pointer-events:none}
+@keyframes liftout{to{opacity:0; transform:translateY(-70px) scale(1.03)}}
+.card.playin{animation:playin .3s cubic-bezier(.2,.8,.3,1.15) backwards}
+@keyframes playin{from{opacity:0; transform:translateY(46px) scale(.94)}}
+#scoreNow.pulse{animation:scorepulse .5s ease}
+@keyframes scorepulse{35%{transform:scale(1.22); color:var(--gold)}}
 .card.scoring{animation:cardpop .32s ease}
 @keyframes cardpop{0%{transform:translateY(0)} 45%{transform:translateY(-14px) scale(1.08)} 100%{transform:translateY(0)}}
 .popup{
@@ -388,6 +398,7 @@ const BOSSES = [
 /* ================= state ================= */
 let S = null;
 let animating = false;
+let justDrawn = new Set();
 let sortMode = "rank";
 const $ = id => document.getElementById(id);
 
@@ -435,7 +446,13 @@ function startRound(){
 }
 
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} }
-function drawTo(n){ while(S.hand.length<n && S.deck.length) S.hand.push({...S.deck.pop(), sel:false}); sortHand(); }
+function drawTo(n){
+  while(S.hand.length<n && S.deck.length){
+    const c = {...S.deck.pop(), sel:false};
+    S.hand.push(c); justDrawn.add(c.id);
+  }
+  sortHand();
+}
 function sortHand(){
   if (sortMode==="custom") return;
   if (sortMode==="rank") S.hand.sort((a,b)=>b.rank.r-a.rank.r || a.suit.k.localeCompare(b.suit.k));
@@ -560,7 +577,13 @@ async function playHand(){
   const firstFiling = S.filingsUsed===0;
   const res = computeScore(sel, {dry:false, eatenId, firstFiling});
   S.filings--; S.filingsUsed++;
+  const selIds = new Set(sel.map(c=>c.id));
+  document.querySelectorAll("#handRow .card").forEach((el,i)=>{
+    if (S.hand[i] && selIds.has(S.hand[i].id)) el.classList.add("liftout");
+  });
+  await wait(190);
   S.hand = S.hand.filter(c=>!c.sel);
+  render();
   await animateScore(sel, res, eatenId);
   S.score += res.total;
   clearPlayed();
@@ -569,16 +592,25 @@ async function playHand(){
   drawTo(8);
   animating = false;
   render();
+  const sn = $("scoreNow");
+  sn.classList.remove("pulse"); void sn.offsetWidth; sn.classList.add("pulse");
 }
 
-function discardCards(){
+async function discardCards(){
   if (animating || S.phase!=="play") return;
   const sel = selected();
   if (!sel.length || S.discards<=0){ blip(120); return; }
+  animating = true;
   S.discards--;
+  const selIds = new Set(sel.map(c=>c.id));
+  document.querySelectorAll("#handRow .card").forEach((el,i)=>{
+    if (S.hand[i] && selIds.has(S.hand[i].id)) el.classList.add("flyout");
+  });
+  blip(300);
+  await wait(250);
   S.hand = S.hand.filter(c=>!c.sel);
   drawTo(8);
-  blip(300);
+  animating = false;
   render();
 }
 
@@ -680,9 +712,11 @@ async function animateScore(played, res, eatenId){
   const row = $("playedRow"); row.innerHTML="";
   const tally = $("tallyLine");
   const els = {};
-  played.forEach(c=>{
+  played.forEach((c,i)=>{
     const el = cardEl(c, false);
     el.classList.remove("sel");
+    el.classList.add("playin");
+    el.style.animationDelay = (i*55)+"ms";
     if (eatenId && c.id===eatenId) el.classList.add("eaten");
     row.appendChild(el); els[c.id]=el;
   });
@@ -690,7 +724,8 @@ async function animateScore(played, res, eatenId){
   const showTally = (hl)=>{ tally.innerHTML =
     `<span>${res.ev.def.name}</span><span class="tchips num">${fmt(Math.round(ch))}</span><span class="tx">×</span><span class="tmult num">${mu%1?mu.toFixed(1):mu}</span>${hl||""}`; };
   showTally();
-  await wait(260);
+  await wait(340);
+  Object.values(els).forEach(el=>{ el.classList.remove("playin"); el.style.animationDelay=""; });
   for (const st of res.steps){
     if (st.type==="card"){
       const el = els[st.card.id]; if(!el) continue;
@@ -897,7 +932,16 @@ function render(){
 
   // hand
   const hr = $("handRow"); hr.innerHTML="";
-  S.hand.forEach(c=>hr.appendChild(cardEl(c, true)));
+  let dealIdx = 0;
+  S.hand.forEach(c=>{
+    const el = cardEl(c, true);
+    if (justDrawn.has(c.id)){
+      el.classList.add("dealin");
+      el.style.animationDelay = (dealIdx++*45)+"ms";
+    }
+    hr.appendChild(el);
+  });
+  justDrawn.clear();
   $("btnPlay").disabled = !sel.length || S.filings<=0 || animating;
   $("btnDiscard").disabled = !sel.length || S.discards<=0 || animating;
   $("btnPlay").textContent = `File it (${S.filings})`;
