@@ -23,6 +23,8 @@
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+.card,.joker{touch-action:pan-y}
+.card.dragging,.joker.dragging{z-index:30; transition:none; cursor:grabbing; filter:drop-shadow(0 10px 16px rgba(0,0,0,.55))}
 html,body{height:100%}
 body{
   background:radial-gradient(1200px 800px at 50% 30%, var(--felt-hi), var(--felt) 70%);
@@ -244,7 +246,7 @@ kbd{background:rgba(255,255,255,.1); border-radius:3px; padding:1px 5px; font-fa
     <div id="gamewrap" style="display:flex;flex-direction:column;gap:10px;flex:1">
       <div id="jokerZone">
         <div id="jokerRow"></div>
-        <div id="jokerHint">click counsel → <kbd>←</kbd><kbd>→</kbd> reorder · <kbd>S</kbd> sell<br>order matters.</div>
+        <div id="jokerHint">drag to reorder · tap for sell/arrows<br>order matters.</div>
       </div>
       <div id="playZone">
         <div id="bossBanner"></div>
@@ -432,6 +434,7 @@ function startRound(){
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} }
 function drawTo(n){ while(S.hand.length<n && S.deck.length) S.hand.push({...S.deck.pop(), sel:false}); sortHand(); }
 function sortHand(){
+  if (sortMode==="custom") return;
   if (sortMode==="rank") S.hand.sort((a,b)=>b.rank.r-a.rank.r || a.suit.k.localeCompare(b.suit.k));
   else S.hand.sort((a,b)=>a.suit.k.localeCompare(b.suit.k) || b.rank.r-a.rank.r);
 }
@@ -733,6 +736,62 @@ function blip(f){
   }catch(e){}
 }
 
+/* ================= drag ================= */
+function enableDrag(el, getKids, onReorder, onTap){
+  el.addEventListener("pointerdown", e=>{
+    if (e.button && e.button!==0) return;
+    if (e.target.closest(".jctrl")) return;
+    const sx=e.clientX, sy=e.clientY, pid=e.pointerId;
+    let dragging=false;
+    const move = ev=>{
+      const dx=ev.clientX-sx, dy=ev.clientY-sy;
+      if (!dragging && Math.abs(dx)>10 && Math.abs(dx)>Math.abs(dy)){
+        dragging=true; el.classList.add("dragging");
+        try{ el.setPointerCapture(pid); }catch(err){}
+      }
+      if (dragging) el.style.transform=`translate(${dx}px, ${Math.max(-24,Math.min(24,dy))}px)`;
+    };
+    const done = ev=>{
+      el.removeEventListener("pointermove",move);
+      el.removeEventListener("pointerup",done);
+      el.removeEventListener("pointercancel",abort);
+      if (dragging){
+        el.classList.remove("dragging"); el.style.transform="";
+        const kids=getKids().filter(k=>k!==el);
+        let idx=kids.length;
+        for (let i=0;i<kids.length;i++){
+          const r=kids[i].getBoundingClientRect();
+          if (ev.clientX < r.left + r.width/2){ idx=i; break; }
+        }
+        onReorder(idx);
+      } else if (onTap) onTap();
+    };
+    const abort = ()=>{
+      el.classList.remove("dragging"); el.style.transform="";
+      el.removeEventListener("pointermove",move);
+      el.removeEventListener("pointerup",done);
+      el.removeEventListener("pointercancel",abort);
+    };
+    el.addEventListener("pointermove",move);
+    el.addEventListener("pointerup",done);
+    el.addEventListener("pointercancel",abort);
+  });
+}
+function moveCardTo(from, to){
+  if (animating || S.phase!=="play") return;
+  const c = S.hand.splice(from,1)[0];
+  S.hand.splice(to,0,c);
+  sortMode = "custom";
+  blip(430); render();
+}
+function moveJokerTo(from, to){
+  const selObj = S.jokerSel>=0 ? S.jokers[S.jokerSel] : null;
+  const j = S.jokers.splice(from,1)[0];
+  S.jokers.splice(to,0,j);
+  S.jokerSel = selObj ? S.jokers.indexOf(selObj) : -1;
+  blip(500); render();
+}
+
 /* ================= render ================= */
 function fmt(n){ return n.toLocaleString("en-US"); }
 
@@ -747,7 +806,10 @@ function cardEl(c, interactive){
       <div class="seal" style="background:${c.suit.color}">${c.suit.k}</div>
     </div>
     <div class="tab">${c.suit.name.slice(0,5)}</div>`;
-  if (interactive) el.addEventListener("click", ()=>toggleCard(S.hand.indexOf(c)));
+  if (interactive) enableDrag(el,
+    ()=>[...document.querySelectorAll("#handRow .card")],
+    idx=>moveCardTo(S.hand.indexOf(c), idx),
+    ()=>toggleCard(S.hand.indexOf(c)));
   return el;
 }
 
@@ -811,7 +873,10 @@ function render(){
     el.className="joker"+(i===S.jokerSel?" sel":"");
     el.innerHTML = `<div class="jname">${j.name}</div><div class="jeff">${j.eff}</div><div class="jflav">${j.flav}</div>`
       + (j.id==="precedent" ? `<div class="jcounter">×${S.precStreak||0}</div>`:"");
-    el.addEventListener("click", ()=>{ S.jokerSel = (S.jokerSel===i? -1 : i); render(); });
+    enableDrag(el,
+      ()=>[...document.querySelectorAll("#jokerRow .joker")],
+      idx=>moveJokerTo(i, idx),
+      ()=>{ S.jokerSel = (S.jokerSel===i? -1 : i); render(); });
     if (i===S.jokerSel){
       const ctr = document.createElement("div"); ctr.className="jctrl";
       const mk = (txt,fn)=>{ const b=document.createElement("button"); b.textContent=txt;
@@ -860,7 +925,10 @@ function render(){
       const el = document.createElement("div");
       el.className = "joker"+(i===S.jokerSel?" sel":"");
       el.innerHTML = `<div class="jname">${j.name}</div><div class="jeff">${j.eff}</div><div class="jflav">${j.flav}</div>`;
-      el.addEventListener("click", ()=>{ S.jokerSel=(S.jokerSel===i?-1:i); render(); });
+      enableDrag(el,
+        ()=>[...document.querySelectorAll("#shopJokers .joker")],
+        idx=>moveJokerTo(i, idx),
+        ()=>{ S.jokerSel=(S.jokerSel===i?-1:i); render(); });
       const row = document.createElement("div"); row.style.cssText="display:flex;gap:5px";
       const mkb = (txt,fn)=>{ const b=document.createElement("button"); b.className="buy";
         b.style.padding="7px 12px"; b.textContent=txt;
