@@ -29,7 +29,7 @@ body{
   color:var(--paper); font-family:var(--body); font-size:14px;
   overflow-x:hidden; -webkit-font-smoothing:antialiased; user-select:none;
 }
-#app{display:flex; min-height:100vh; max-width:1180px; margin:0 auto; gap:14px; padding:14px}
+#app{display:flex; max-width:1180px; margin:0 auto; gap:14px; padding:14px}
 button{font-family:inherit; cursor:pointer}
 .num{font-family:var(--mono); font-variant-numeric:tabular-nums}
 
@@ -91,7 +91,7 @@ button{font-family:inherit; cursor:pointer}
 #jokerHint{font-size:10px; color:rgba(242,234,214,.45); align-self:flex-end; text-align:right; max-width:110px; line-height:1.5}
 
 /* play area */
-#playZone{flex:1; min-height:190px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; position:relative}
+#playZone{flex:1; min-height:170px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; position:relative}
 #playedRow{display:flex; gap:10px; min-height:120px; align-items:center}
 #tallyLine{font-family:var(--disp); font-weight:700; font-size:22px; letter-spacing:.02em; min-height:30px; display:flex; align-items:center; gap:10px}
 #tallyLine .tchips{color:var(--chips)} #tallyLine .tmult{color:var(--mult)} #tallyLine .ttotal{color:var(--gold); font-size:28px}
