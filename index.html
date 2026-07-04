@@ -669,7 +669,7 @@ function moveJoker(d){
 }
 
 function gameOver(){
-  S.phase="over";
+  S.phase="over"; clearRun();
   const best = store();
   best.runs++;
   best.bestAnte = Math.max(best.bestAnte, S.ante);
@@ -683,7 +683,7 @@ function gameOver(){
   blip(90); setTimeout(()=>blip(70),150);
 }
 function showWin(){
-  S.phase="won";
+  S.phase="won"; clearRun();
   const best = store(); best.wins++; best.runs++; best.bestAnte=8; save(best);
   $("endBox").innerHTML = `
     <h2 style="color:var(--good)">ESTATE CLOSED</h2>
@@ -774,6 +774,54 @@ function blip(f){
   }catch(e){}
 }
 
+/* ================= run persistence ================= */
+const suitByK = Object.fromEntries(SUITS.map(s=>[s.k,s]));
+const rankByR = Object.fromEntries(RANKS.map(r=>[r.r,r]));
+const encCard = c => ({s:c.suit.k, r:c.rank.r, sel:!!c.sel});
+const decCard = d => ({suit:suitByK[d.s], rank:rankByR[d.r], id:d.s+d.r, sel:!!d.sel});
+function saveRun(){
+  if (!S || S.phase==="over" || S.phase==="won") return;
+  try{
+    localStorage.setItem("deadhand-run", JSON.stringify({
+      v:1, ante:S.ante, blindIdx:S.blindIdx, money:S.money,
+      jokerIds:S.jokers.map(j=>j.id), jokerSel:S.jokerSel,
+      deck:S.deck.map(encCard), hand:S.hand.map(encCard),
+      filings:S.filings, discards:S.discards, score:S.score, target:S.target,
+      bossId:S.boss?S.boss.id:null, bossSuitK:S.bossSuit?S.bossSuit.k:null,
+      bossDisabled:!!S.bossDisabled, filingsUsed:S.filingsUsed,
+      precType:S.precType, precStreak:S.precStreak,
+      endless:S.endless, roundsWon:S.roundsWon,
+      offers:S.shopOffers.map(o=>({id:o.id, sold:!!o.sold})),
+      phase:S.phase, lastReward:S.lastReward||null, sortMode
+    }));
+  }catch(e){}
+}
+function clearRun(){ try{ localStorage.removeItem("deadhand-run"); }catch(e){} }
+function loadRun(){
+  try{
+    const d = JSON.parse(localStorage.getItem("deadhand-run"));
+    if (!d || d.v!==1 || (d.phase!=="play" && d.phase!=="shop")) return false;
+    S = {
+      ante:d.ante, blindIdx:d.blindIdx, money:d.money,
+      jokers:d.jokerIds.map(id=>({...JOKERS.find(j=>j.id===id)})).filter(j=>j.id),
+      jokerSel:d.jokerSel,
+      deck:d.deck.map(decCard), hand:d.hand.map(decCard),
+      discardPile:[], filings:d.filings, discards:d.discards,
+      score:d.score, target:d.target,
+      boss:d.bossId ? BOSSES.find(b=>b.id===d.bossId) : null,
+      bossSuit:d.bossSuitK ? suitByK[d.bossSuitK] : null,
+      bossDisabled:!!d.bossDisabled, filingsUsed:d.filingsUsed,
+      precType:d.precType, precStreak:d.precStreak,
+      endless:!!d.endless, roundsWon:d.roundsWon,
+      shopOffers:d.offers.map(o=>({...JOKERS.find(j=>j.id===o.id), sold:o.sold})).filter(o=>o.id),
+      phase:d.phase, lastReward:d.lastReward||undefined,
+    };
+    sortMode = d.sortMode==="suit" ? "suit" : (d.sortMode==="custom" ? "custom" : "rank");
+    justDrawn.clear();
+    return true;
+  }catch(e){ return false; }
+}
+
 /* ================= drag ================= */
 function enableDrag(el, getKids, onReorder, onTap){
   el.addEventListener("pointerdown", e=>{
@@ -852,6 +900,7 @@ function cardEl(c, interactive){
 }
 
 function render(){
+  if (!animating) saveRun();
   const inShop = S.phase==="shop";
   $("gamewrap").style.display = inShop ? "none":"flex";
   $("shop").style.display = inShop ? "flex":"none";
@@ -1030,5 +1079,5 @@ $("btnNew").addEventListener("click", newRun);
 $("btnReroll").addEventListener("click", reroll);
 $("btnNext").addEventListener("click", nextRound);
 
-newRun();
+if (loadRun()) render(); else newRun();
 </script>
