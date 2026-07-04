@@ -71,7 +71,8 @@ button{font-family:inherit; cursor:pointer}
 
 /* jokers */
 #jokerZone{display:flex; align-items:stretch; gap:8px; min-height:118px}
-#jokerRow{display:flex; gap:8px; flex:1}
+#jokerRow{display:flex; gap:8px; flex:0 0 auto; width:760px}
+#jokerRow .joker,#jokerRow .jslot-empty{flex:1 1 0; width:auto; min-width:0}
 .joker{
   width:118px; min-height:112px; background:linear-gradient(175deg,var(--manila-hi),var(--manila));
   border:1px solid var(--manila-edge); border-radius:7px; color:var(--ink);
@@ -93,7 +94,7 @@ button{font-family:inherit; cursor:pointer}
 #jokerHint{font-size:10px; color:rgba(242,234,214,.45); align-self:flex-end; text-align:right; max-width:110px; line-height:1.5}
 
 /* play area */
-#playZone{flex:1; min-height:170px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; position:relative}
+#playZone{flex:1; min-height:170px; width:760px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; position:relative}
 #playedRow{display:flex; gap:10px; min-height:120px; align-items:center}
 #tallyLine{font-family:var(--disp); font-weight:700; font-size:22px; letter-spacing:.02em; min-height:30px; display:flex; align-items:center; gap:10px}
 #tallyLine .tchips{color:var(--chips)} #tallyLine .tmult{color:var(--mult)} #tallyLine .ttotal{color:var(--gold); font-size:28px}
@@ -101,8 +102,9 @@ button{font-family:inherit; cursor:pointer}
 #bossBanner{position:absolute; top:2px; left:50%; transform:translateX(-50%) rotate(-1.5deg); background:#8f2c22; color:#fff; font-family:var(--disp); font-weight:700; letter-spacing:.14em; text-transform:uppercase; font-size:11px; padding:4px 14px; border-radius:2px; box-shadow:0 3px 8px rgba(0,0,0,.4); display:none}
 
 /* preview strip */
+#previewWrap{width:760px; display:flex; justify-content:center}
 #preview{
-  align-self:center; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.1);
+  background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.1);
   border-radius:7px; padding:7px 16px; font-family:var(--disp); font-weight:700; font-size:17px;
   letter-spacing:.02em; display:flex; align-items:baseline; gap:9px; min-height:36px;
 }
@@ -112,8 +114,8 @@ button{font-family:inherit; cursor:pointer}
 #preview .pidle{color:rgba(242,234,214,.35); font-size:12px; font-family:var(--body); font-weight:400}
 
 /* hand */
-#handZone{display:flex; flex-direction:column; gap:10px; padding-bottom:6px}
-#handRow{display:flex; gap:8px; justify-content:center; min-height:132px}
+#handZone{display:flex; flex-direction:column; gap:10px; padding-bottom:6px; width:760px}
+#handRow{display:flex; gap:8px; justify-content:flex-start; min-height:132px}
 .card{
   width:88px; height:124px; flex:0 0 88px; position:relative; cursor:pointer;
   transition:transform .13s ease, box-shadow .13s ease;
@@ -204,6 +206,7 @@ kbd{background:rgba(255,255,255,.1); border-radius:3px; padding:1px 5px; font-fa
 }
 @media (max-width:900px){
   #app{flex-direction:column} #rail{width:100%; flex:none; flex-direction:row; flex-wrap:wrap}
+  #jokerRow,#handZone,#playZone,#previewWrap{width:100%}
   #rail .panel{flex:1; min-width:160px}
   .card{width:64px; flex-basis:64px; height:100px}
   .card .rank{font-size:19px} .joker{width:100px; flex-basis:100px}
@@ -253,7 +256,7 @@ kbd{background:rgba(255,255,255,.1); border-radius:3px; padding:1px 5px; font-fa
         <div id="playedRow"></div>
         <div id="tallyLine"></div>
       </div>
-      <div id="preview"><span class="pidle">select up to 5 case files</span></div>
+      <div id="previewWrap"><div id="preview"><span class="pidle">select up to 5 case files</span></div></div>
       <div id="handZone">
         <div id="handRow"></div>
         <div id="actions">
