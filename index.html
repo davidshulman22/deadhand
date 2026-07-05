@@ -1079,5 +1079,13 @@ $("btnNew").addEventListener("click", newRun);
 $("btnReroll").addEventListener("click", reroll);
 $("btnNext").addEventListener("click", nextRound);
 
+function fitZoom(){
+  const w = window.innerWidth;
+  if (w <= 900){ document.body.style.zoom = ""; return; }
+  document.body.style.zoom = Math.max(1, Math.min(1.35, w / 1208, window.innerHeight / 765));
+}
+window.addEventListener("resize", fitZoom);
+fitZoom();
+
 if (loadRun()) render(); else newRun();
 </script>
