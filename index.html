@@ -96,6 +96,13 @@ button:disabled{cursor:not-allowed}
 @keyframes jflash{40%{transform:translateY(-7px) scale(1.04);box-shadow:0 10px 22px rgba(0,0,0,.48)}}
 .jslot-empty{flex:1 0 150px;min-width:150px;min-height:126px;border:2px dashed rgba(255,255,255,.26);border-radius:12px;display:grid;place-items:center;color:var(--paper-muted);font-size:.82rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;scroll-snap-align:start}
 #jokerHint{font-size:.85rem;color:var(--paper-muted)}
+#formBar{padding-top:10px;border-top:1px solid rgba(255,255,255,.15);display:grid;gap:8px}
+#formBar .section-head h3{font-size:.9rem;letter-spacing:.11em;text-transform:uppercase}
+#formDocket,#shopFormDocket{display:flex;gap:9px;overflow-x:auto;padding:3px 3px 8px;scrollbar-color:var(--manila-edge) transparent}
+.form-card{flex:0 0 min(250px,78vw);min-height:88px;border:2px solid #83b7d6;border-radius:10px;background:linear-gradient(160deg,#eef8ff,#bcd9ea);color:#102939;padding:10px 12px;text-align:left;box-shadow:0 4px 9px rgba(0,0,0,.25)}
+button.form-card{cursor:pointer}.form-card .fname{font-weight:950;font-size:.94rem}.form-card .feff{font-size:.8rem;line-height:1.35;margin-top:5px}.form-card .fform{font:800 .7rem var(--mono);color:#446777;margin-top:6px}.form-card:disabled{opacity:.72;cursor:default}
+.empty-note{color:var(--paper-muted);font-size:.84rem;padding:8px 3px}
+#formNotice{min-height:1.2em;font-size:.8rem;color:var(--gold)}
 
 #playZone{min-height:112px;padding:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;position:relative;background:rgba(7,28,22,.45);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius)}
 #playedRow{display:flex;gap:10px;min-height:0;align-items:center;max-width:100%;overflow-x:auto}
@@ -120,6 +127,7 @@ button:disabled{cursor:not-allowed}
 .card .rank{position:absolute;top:14px;left:15px;font-weight:950;font-size:clamp(2.6rem,4vw,3.75rem);line-height:.9}
 .card .cchip{position:absolute;top:14px;right:13px;font:900 1rem var(--mono);color:#5c471d;background:rgba(255,255,255,.46);border-radius:6px;padding:4px 6px}
 .card .rname{position:absolute;left:14px;right:14px;top:47%;transform:translateY(-50%);font-size:clamp(.93rem,1.2vw,1.12rem);line-height:1.15;text-align:center;text-transform:uppercase;color:var(--ink);font-weight:900;letter-spacing:.025em}
+.card .modmarks{position:absolute;left:12px;right:12px;top:61%;display:flex;justify-content:center;gap:3px;flex-wrap:wrap}.card .modmarks span{font:900 .54rem var(--mono);letter-spacing:.03em;color:#124866;background:#d9f1ff;border:1px solid #6ea3c1;border-radius:3px;padding:2px 3px}
 .card .matter{position:absolute;left:13px;right:13px;bottom:13px;display:flex;align-items:center;gap:5px;font-weight:900;font-size:.75rem;text-transform:uppercase;letter-spacing:0;color:var(--ink-soft);white-space:nowrap}
 .card .seal{width:28px;height:28px;flex:0 0 28px;border-radius:50%;display:grid;place-items:center;font-weight:950;font-size:.9rem;color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
 .card .selected-mark{position:absolute;top:-11px;right:-9px;width:34px;height:34px;border-radius:50%;display:none;place-items:center;background:var(--gold);color:#17271e;font-size:1.25rem;font-weight:950;border:3px solid #fff;z-index:3;box-shadow:0 4px 9px rgba(0,0,0,.35)}
@@ -149,12 +157,16 @@ kbd{display:inline-block;background:#071c16;border:1px solid rgba(255,255,255,.2
 #shop{display:none;flex-direction:column;gap:18px;padding:clamp(16px,3vw,30px);align-items:stretch}
 #shop h2{text-align:center;font-weight:950;font-size:clamp(1.7rem,3vw,2.5rem);letter-spacing:.045em;text-transform:uppercase}#shop h2 span{color:var(--gold)}
 #shopMsg{text-align:center;font-size:1rem;color:var(--paper-muted)}
+.shop-section{display:grid;gap:10px}.shop-section h3{text-align:center;font-size:1rem;letter-spacing:.1em;text-transform:uppercase}.section-note{text-align:center;color:var(--paper-muted);font-size:.82rem}
 #shopRow{display:grid;grid-template-columns:repeat(3,minmax(210px,1fr));gap:16px}
+#formShopRow,#cleShopRow{display:grid;grid-template-columns:repeat(2,minmax(230px,1fr));gap:14px}
 .offer{display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:0}
 .offer .joker{width:100%;min-width:0;min-height:155px;padding-left:16px;cursor:default}.offer .joker::before{display:none}
 .offer .price{text-align:center;font-weight:900;font-size:1.2rem;color:var(--gold)}
 .offer .buy{background:var(--gold);border-color:#ffe39a;color:var(--ink);font-size:1rem}
 .offer.sold .joker{opacity:.45}
+.shop-form,.cle-card{display:flex;flex-direction:column;gap:9px;align-items:stretch}.shop-form .form-card{width:100%;flex-basis:auto}.shop-form .price,.cle-card .price{text-align:center;font-weight:900;color:var(--gold)}
+.cle-card{min-height:150px;background:#172d3b;border:2px solid #6b98b3;border-radius:11px;padding:15px}.cle-card .cle-name{font-weight:950;font-size:1.05rem}.cle-card .cle-level{font:800 .76rem var(--mono);color:#aed7ef}.cle-card .cle-effect{font-size:.87rem;line-height:1.4;color:var(--paper)}.shop-form .buy,.cle-card .buy{width:100%;background:var(--gold);border-color:#ffe39a;color:var(--ink)}
 #ownedWrap{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.15)}
 .owned-label{text-align:center;font-size:.88rem;color:var(--paper-muted)}
 #shopJokers{display:flex;gap:12px;overflow-x:auto;padding:5px 4px 22px}
@@ -194,7 +206,7 @@ body.high-contrast .surface,body.high-contrast #playZone,body.high-contrast #pre
   .stat-grid{grid-template-columns:repeat(4,1fr)}
   #utilities{overflow-x:auto;flex-wrap:nowrap}
   .utility-btn,.utility-menu>summary{white-space:nowrap}
-  #shopRow{grid-template-columns:1fr}
+  #shopRow,#formShopRow,#cleShopRow{grid-template-columns:1fr}
   #actions{grid-template-columns:1fr 1fr}
   #btnSortR,#btnSortS{grid-row:2}
   #keyhint{display:none}
@@ -298,6 +310,11 @@ body.high-contrast .surface,body.high-contrast #playZone,body.high-contrast #pre
           <p>Large cards remain readable; scroll the row when needed.</p>
         </div>
         <div id="handRow" aria-label="Case files in hand"></div>
+        <div id="formBar">
+          <div class="section-head"><h3>Forms</h3><p>Choose one case file, then use a form.</p></div>
+          <div id="formDocket" aria-label="Available forms"></div>
+          <div id="formNotice" aria-live="polite"></div>
+        </div>
         <div id="actions">
           <button class="sbtn" id="btnSortR" type="button">Sort by value</button>
           <button class="abtn" id="btnPlay" type="button">File it</button>
@@ -311,10 +328,25 @@ body.high-contrast .surface,body.high-contrast #playZone,body.high-contrast #pre
     <section id="shop" class="surface" aria-labelledby="shopHeading">
       <h2 id="shopHeading">The Vendor Hall <span class="num" id="shopMoney">$4</span></h2>
       <div id="shopMsg">CLE conference. Exhibitors want your retainer.</div>
-      <div id="shopRow"></div>
+      <section class="shop-section" aria-labelledby="counselShopHeading">
+        <h3 id="counselShopHeading">Retain counsel</h3>
+        <div id="shopRow"></div>
+      </section>
+      <section class="shop-section" aria-labelledby="formsShopHeading">
+        <h3 id="formsShopHeading">Buy forms</h3>
+        <p class="section-note">Carry up to three. Each permanently changes one case file for this run.</p>
+        <div id="formShopRow"></div>
+      </section>
+      <section class="shop-section" aria-labelledby="cleShopHeading">
+        <h3 id="cleShopHeading">CLE courses</h3>
+        <p class="section-note">Permanent hand upgrades. Each level adds 10 base Chips and 1 base Mult.</p>
+        <div id="cleShopRow"></div>
+      </section>
       <div id="ownedWrap">
         <div class="owned-label">Your counsel — select one to sell it or change its position.</div>
         <div id="shopJokers"></div>
+        <div class="owned-label">Forms in your briefcase</div>
+        <div id="shopFormDocket"></div>
       </div>
       <div id="shopBtns">
         <button class="sbtn" id="btnReroll" type="button">Reroll $2 (E)</button>
@@ -341,6 +373,7 @@ body.high-contrast .surface,body.high-contrast #playZone,body.high-contrast #pre
       <tr><td>Pro Se</td><td>high card</td><td><b>5</b> × <i>1</i></td></tr>
     </table>
     <p>Only the cards that make the hand score. Card chips = face value (A=11, faces=10). Matters: <b style="color:#dbc8a5">Probate</b>, <b style="color:#8ecaff">Trust</b>, <b style="color:#d2a7ff">Guardianship</b>, <b style="color:#ff998e">Litigation</b>. The preview uses the real calculator, counsel included. Dropbox audits show a possible score range because the excluded card is random. Card-triggered counsel resolves with each card; other counsel resolves from left to right.</p>
+    <p><b>Forms</b> are one-use filings carried in your briefcase. During a matter, select exactly one case file and choose a form to permanently amend, reclassify, strike, certify, or enhance it for the run. <b>CLE courses</b> permanently level up a poker hand; every level adds 10 base Chips and 1 base Mult.</p>
     <div class="keys">
       <b>1–8</b> toggle card &nbsp; <b>Enter</b> file &nbsp; <b>X</b> discard<br>
       <b>R / T</b> sort by value / matter &nbsp; <b>C</b> clear selection<br>
@@ -416,6 +449,15 @@ const JOKERS = [
    eff:"<b>+80 Chips</b> if filing has exactly 5 cards", flav:"Letters of Administration, the long way."},
 ];
 
+const FORMS = [
+  {id:"amend", name:"Amended Schedule", price:4, code:"AMEND", eff:"Raise one selected case file by one rank permanently.", flav:"Scrivener's error. Naturally."},
+  {id:"reclass", name:"Reclassification", price:3, code:"RECLASS", eff:"Move one selected case file to the next matter type permanently.", flav:"New division, same file number."},
+  {id:"strike", name:"Motion to Strike", price:4, code:"STRIKE", eff:"Remove one selected case file from the deck for this run.", flav:"Immaterial, impertinent, and gone."},
+  {id:"certify", name:"Certified Copy", price:5, code:"CERTIFIED", eff:"Give one selected case file +20 Chips whenever it scores.", flav:"The seal does most of the work."},
+  {id:"emergency", name:"Emergency Petition", price:5, code:"EMERGENCY", eff:"Give one selected case file +2 Mult whenever it scores.", flav:"The word emergency is doing billable work."},
+];
+const formById = id => FORMS.find(f=>f.id===id);
+
 const BOSSES = [
   {id:"heir", name:"The Disgruntled Heir", desc:s=>`Cards of one matter type (${s}) are debuffed — no chips, no triggers.`},
   {id:"f706", name:"Form 706", desc:()=>"Estate tax paperwork: one fewer filing this round."},
@@ -440,7 +482,9 @@ function newRun(){
     boss:null, bossSuit:null, filingsUsed:0,
     precType:null, precStreak:0,
     endless:false, roundsWon:0,
-    shopOffers:[], phase:"play", lastRound:null,
+    shopOffers:[], formOffers:[], cleOffers:[], forms:[],
+    caseMods:{}, handLevels:{}, formNotice:"",
+    phase:"play", lastRound:null,
   };
   startRound();
   render();
@@ -467,7 +511,10 @@ function startRound(){
   }
   // fresh deck each round
   S.deck = [];
-  for (const su of SUITS) for (const rk of RANKS) S.deck.push({suit:su, rank:rk, id:su.k+rk.r});
+  for (const su of SUITS) for (const rk of RANKS){
+    const c = makeCaseFile(su, rk);
+    if (c) S.deck.push(c);
+  }
   shuffle(S.deck);
   S.hand = [];
   drawTo(8);
@@ -476,6 +523,23 @@ function startRound(){
 }
 
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} }
+function makeCaseFile(su, rk){
+  const baseId=su.k+rk.r, mod=S.caseMods[baseId]||{};
+  if (mod.removed) return null;
+  return {
+    suit:SUITS.find(s=>s.k===(mod.suitK||su.k))||su,
+    rank:RANKS.find(r=>r.r===(mod.rankR||rk.r))||rk,
+    id:baseId, baseId,
+    bonusChips:mod.bonusChips||0, bonusMult:mod.bonusMult||0,
+  };
+}
+function refreshCaseFile(c){
+  const mod=S.caseMods[c.baseId||c.id]||{};
+  c.baseId=c.baseId||c.id;
+  c.suit=suitByK[mod.suitK]||c.suit;
+  c.rank=rankByR[mod.rankR]||c.rank;
+  c.bonusChips=mod.bonusChips||0; c.bonusMult=mod.bonusMult||0;
+}
 function drawTo(n){
   while(S.hand.length<n && S.deck.length){
     const c = {...S.deck.pop(), sel:false};
@@ -526,7 +590,10 @@ function computeScore(played, opts){
   const {dry, eatenId, firstFiling} = opts;
   const ev = evaluate(played);
   if (!ev) return null;
-  let chips = ev.def.chips, mult = ev.def.mult;
+  const handLevel = S.handLevels[ev.key]||0;
+  const baseChips = ev.def.chips + handLevel*10;
+  const baseMult = ev.def.mult + handLevel;
+  let chips = baseChips, mult = baseMult;
   const steps = [];
   const scoringSet = new Set(ev.scoring.map(c=>c.id));
   const scoringCards = played.filter(c=>scoringSet.has(c.id));
@@ -538,7 +605,7 @@ function computeScore(played, opts){
     if (isDebuffed(c)){ steps.push({type:"card", card:c, debuffed:true}); return; }
     const triggers = 1 + (has("clio") && i===0 ? 1 : 0);
     for (let t=0; t<triggers; t++){
-      let cCh = c.rank.chips, cMu = 0;
+      let cCh = c.rank.chips+(c.bonusChips||0), cMu = c.bonusMult||0;
       if (has("homestead") && c.suit.k==="P") cCh += 25;
       if (has("paralegal") && c.suit.k==="G") cMu += 4;
       if (has("deadhand") && c.rank.r===13){ cCh += 20; cMu += 2; }
@@ -579,7 +646,7 @@ function computeScore(played, opts){
   if (!dry){
     if (S.precType===ev.key) S.precStreak++; else { S.precType=ev.key; S.precStreak=1; }
   }
-  return {ev, chips, mult, total, steps, halved};
+  return {ev, chips, mult, total, steps, halved, baseChips, baseMult, handLevel};
 }
 
 /* ================= actions ================= */
@@ -673,6 +740,10 @@ function rollShop(){
   const pool = JOKERS.filter(j=>!owned.has(j.id));
   shuffle(pool);
   S.shopOffers = pool.slice(0,3).map(j=>({...j, sold:false}));
+  const formPool=[...FORMS]; shuffle(formPool);
+  S.formOffers=formPool.slice(0,2).map(f=>({...f,sold:false}));
+  const clePool=[...HAND_ORDER]; shuffle(clePool);
+  S.cleOffers=clePool.slice(0,2).map(key=>({key,sold:false}));
 }
 function buyOffer(i){
   const o = S.shopOffers[i];
@@ -681,6 +752,51 @@ function buyOffer(i){
   S.money -= o.price; o.sold = true;
   S.jokers.push({...o});
   blip(700); render();
+}
+function buyForm(i){
+  const o=S.formOffers[i];
+  if(!o||o.sold||S.money<o.price||S.forms.length>=3){ blip(120); return; }
+  S.money-=o.price; o.sold=true; S.forms.push(o.id); blip(680); render();
+}
+function clePrice(key){ return 3+(S.handLevels[key]||0)*2; }
+function buyCle(i){
+  const o=S.cleOffers[i]; if(!o||o.sold) return;
+  const level=S.handLevels[o.key]||0, price=clePrice(o.key);
+  if(level>=5||S.money<price){ blip(120); return; }
+  S.money-=price; S.handLevels[o.key]=level+1; o.sold=true; blip(820); render();
+}
+function useForm(i){
+  if(animating||S.phase!=="play") return;
+  const form=formById(S.forms[i]), picks=selected();
+  if(!form){ return; }
+  if(picks.length!==1){ S.formNotice="Select exactly one case file first."; blip(120); render(); return; }
+  const c=picks[0], baseId=c.baseId||c.id, mod={...(S.caseMods[baseId]||{})};
+  if(form.id==="amend"){
+    if(c.rank.r>=14){ S.formNotice="That case file is already at the highest rank."; blip(120); render(); return; }
+    mod.rankR=c.rank.r+1;
+  } else if(form.id==="reclass"){
+    mod.suitK=SUITS[(SUITS.findIndex(s=>s.k===c.suit.k)+1)%SUITS.length].k;
+  } else if(form.id==="strike"){
+    mod.removed=true;
+  } else if(form.id==="certify"){
+    mod.bonusChips=(mod.bonusChips||0)+20;
+  } else if(form.id==="emergency"){
+    mod.bonusMult=(mod.bonusMult||0)+2;
+  }
+  S.caseMods[baseId]=mod;
+  S.forms.splice(i,1);
+  if(mod.removed){
+    S.hand=S.hand.filter(x=>(x.baseId||x.id)!==baseId);
+    S.deck=S.deck.filter(x=>(x.baseId||x.id)!==baseId);
+    drawTo(8);
+  } else {
+    [...S.hand,...S.deck].filter(x=>(x.baseId||x.id)===baseId).forEach(refreshCaseFile);
+    c.sel=false; sortHand();
+  }
+  S.formNotice=form.id==="strike"
+    ? `${form.name} granted. The case file is out of this run.`
+    : `${form.name} filed. ${c.rank.n} is permanently updated for this run.`;
+  blip(760); render();
 }
 function reroll(){
   if (S.money<2){ blip(120); return; }
@@ -754,7 +870,7 @@ async function animateScore(played, res, eatenId){
     if (eatenId && c.id===eatenId) el.classList.add("eaten");
     row.appendChild(el); els[c.id]=el;
   });
-  let ch = res.ev.def.chips, mu = res.ev.def.mult;
+  let ch = res.baseChips, mu = res.baseMult;
   const showTally = (hl)=>{ tally.innerHTML =
     `<span>${res.ev.def.name}</span><span class="tchips num">${fmt(Math.round(ch))}</span><span class="tx">×</span><span class="tmult num">${mu%1?mu.toFixed(1):mu}</span>${hl||""}`; };
   showTally();
@@ -812,8 +928,8 @@ function blip(f){
 /* ================= run persistence ================= */
 const suitByK = Object.fromEntries(SUITS.map(s=>[s.k,s]));
 const rankByR = Object.fromEntries(RANKS.map(r=>[r.r,r]));
-const encCard = c => ({s:c.suit.k, r:c.rank.r, sel:!!c.sel});
-const decCard = d => ({suit:suitByK[d.s], rank:rankByR[d.r], id:d.s+d.r, sel:!!d.sel});
+const encCard = c => ({s:c.suit.k, r:c.rank.r, b:c.baseId||c.id, bc:c.bonusChips||0, bm:c.bonusMult||0, sel:!!c.sel});
+const decCard = d => ({suit:suitByK[d.s], rank:rankByR[d.r], id:d.b||d.s+d.r, baseId:d.b||d.s+d.r, bonusChips:d.bc||0, bonusMult:d.bm||0, sel:!!d.sel});
 function saveRun(){
   if (!S || S.phase==="over" || S.phase==="won") return;
   try{
@@ -827,6 +943,9 @@ function saveRun(){
       precType:S.precType, precStreak:S.precStreak,
       endless:S.endless, roundsWon:S.roundsWon,
       offers:S.shopOffers.map(o=>({id:o.id, sold:!!o.sold})),
+      formOffers:S.formOffers.map(o=>({id:o.id,sold:!!o.sold})),
+      cleOffers:S.cleOffers.map(o=>({key:o.key,sold:!!o.sold})),
+      forms:S.forms, caseMods:S.caseMods, handLevels:S.handLevels,
       phase:S.phase, lastReward:S.lastReward||null, lastRound:S.lastRound||null, sortMode
     }));
   }catch(e){}
@@ -838,7 +957,7 @@ function loadRun(){
     if (!d || d.v!==1 || (d.phase!=="play" && d.phase!=="shop")) return false;
     S = {
       ante:d.ante, blindIdx:d.blindIdx, money:d.money,
-      jokers:d.jokerIds.map(id=>({...JOKERS.find(j=>j.id===id)})).filter(j=>j.id),
+      jokers:(d.jokerIds||[]).map(id=>({...JOKERS.find(j=>j.id===id)})).filter(j=>j.id),
       jokerSel:d.jokerSel,
       deck:d.deck.map(decCard), hand:d.hand.map(decCard),
       discardPile:[], filings:d.filings, discards:d.discards,
@@ -847,10 +966,18 @@ function loadRun(){
       bossSuit:d.bossSuitK ? suitByK[d.bossSuitK] : null,
       bossDisabled:!!d.bossDisabled, filingsUsed:d.filingsUsed,
       precType:d.precType, precStreak:d.precStreak,
-      endless:!!d.endless, roundsWon:d.roundsWon,
-      shopOffers:d.offers.map(o=>({...JOKERS.find(j=>j.id===o.id), sold:o.sold})).filter(o=>o.id),
+      endless:!!d.endless, roundsWon:d.roundsWon||0,
+      shopOffers:(d.offers||[]).map(o=>({...JOKERS.find(j=>j.id===o.id), sold:o.sold})).filter(o=>o.id),
+      formOffers:(d.formOffers||[]).map(o=>({...formById(o.id),sold:o.sold})).filter(o=>o.id),
+      cleOffers:(d.cleOffers||[]).map(o=>({key:o.key,sold:o.sold})).filter(o=>HANDS[o.key]),
+      forms:(d.forms||[]).filter(id=>formById(id)), caseMods:d.caseMods||{}, handLevels:d.handLevels||{}, formNotice:"",
       phase:d.phase, lastReward:d.lastReward||undefined, lastRound:d.lastRound||null,
     };
+    if(d.phase==="shop" && (!d.formOffers || !d.cleOffers)){
+      const counselOffers=S.shopOffers;
+      rollShop();
+      S.shopOffers=counselOffers;
+    }
     sortMode = d.sortMode==="suit" ? "suit" : (d.sortMode==="custom" ? "custom" : "rank");
     justDrawn.clear();
     return true;
@@ -931,18 +1058,27 @@ function fmt(n){ return n.toLocaleString("en-US"); }
 
 function cardEl(c, interactive){
   const el = document.createElement("div");
+  const mod=S.caseMods[c.baseId||c.id]||{};
+  const totalChips=c.rank.chips+(c.bonusChips||0);
+  const marks=[];
+  if(mod.rankR) marks.push("AMENDED");
+  if(mod.suitK) marks.push("RECLASSIFIED");
+  if(c.bonusChips) marks.push("CERTIFIED");
+  if(c.bonusMult) marks.push("EMERGENCY");
+  const additions=[c.bonusChips?`plus ${c.bonusChips} permanent chips`:"",c.bonusMult?`plus ${c.bonusMult} permanent mult`:""].filter(Boolean).join(", ");
   if (interactive){
     el.tabIndex=0;
     el.setAttribute("role","button");
     el.setAttribute("aria-pressed", c.sel ? "true" : "false");
-    el.setAttribute("aria-label", `${c.rank.d}, ${c.rank.n}, ${c.suit.name}, ${c.rank.chips} chips${c.sel?", selected":""}`);
+    el.setAttribute("aria-label", `${c.rank.d}, ${c.rank.n}, ${c.suit.name}, ${totalChips} chips${additions?`, ${additions}`:""}${c.sel?", selected":""}`);
   }
   el.className = "card" + (c.sel?" sel":"") + (isDebuffed(c)?" debuffed":"");
   el.innerHTML = `
     <div class="folder">
       <div class="rank" style="color:${c.suit.color}">${c.rank.d}</div>
       <div class="rname">${c.rank.n}</div>
-      <div class="cchip">+${c.rank.chips}</div>
+      <div class="cchip">+${totalChips}</div>
+      ${marks.length?`<div class="modmarks">${marks.map(m=>`<span>${m}</span>`).join("")}</div>`:""}
       <div class="matter"><span class="seal" style="background:${c.suit.color}">${c.suit.k}</span><span>${c.suit.label||c.suit.name}</span></div>
     </div>
     <span class="selected-mark" aria-hidden="true">✓</span>`;
@@ -951,6 +1087,19 @@ function cardEl(c, interactive){
     idx=>moveCardTo(S.hand.indexOf(c), idx),
     ()=>toggleCard(S.hand.indexOf(c)));
   return el;
+}
+
+function formCard(f, i, interactive){
+  const el=document.createElement(interactive?"button":"div");
+  el.className="form-card";
+  if(interactive){ el.type="button"; el.addEventListener("click",()=>useForm(i)); }
+  el.innerHTML=`<div class="fname">${f.name}</div><div class="feff">${f.eff}</div><div class="fform">FORM ${f.code}</div>`;
+  return el;
+}
+function renderFormDocket(container, interactive){
+  container.innerHTML="";
+  if(!S.forms.length){ container.innerHTML='<div class="empty-note">No forms in the briefcase.</div>'; return; }
+  S.forms.forEach((id,i)=>{ const f=formById(id); if(f) container.appendChild(formCard(f,i,interactive)); });
 }
 
 function render(){
@@ -1007,7 +1156,8 @@ function render(){
   }
   $("paytable").innerHTML = HAND_ORDER.map(k=>{
     const h=HANDS[k];
-    return `<div class="row${k===activeKey?" active":""}"><span class="hn">${h.name}<small> · ${POKER_NAMES[k]}</small></span><span class="hv num"><b>${h.chips}</b>×<i>${h.mult}</i></span></div>`;
+    const level=S.handLevels[k]||0;
+    return `<div class="row${k===activeKey?" active":""}"><span class="hn">${h.name}<small> · ${POKER_NAMES[k]}${level?` · CLE ${level}`:""}</small></span><span class="hv num"><b>${h.chips+level*10}</b>×<i>${h.mult+level}</i></span></div>`;
   }).join("");
   const pv = $("preview");
   if (prev){
@@ -1055,6 +1205,8 @@ function render(){
   for(let i=S.jokers.length;i<5;i++){
     const e=document.createElement("div"); e.className="jslot-empty"; e.textContent=`Open slot ${i+1}`; jr.appendChild(e);
   }
+  renderFormDocket($("formDocket"),true);
+  $("formNotice").textContent=S.formNotice||"";
 
   // hand
   const hr = $("handRow"); hr.innerHTML="";
@@ -1089,6 +1241,21 @@ function render(){
       d.querySelector(".buy").addEventListener("click", ()=>buyOffer(i));
       srow.appendChild(d);
     });
+    const frow=$("formShopRow"); frow.innerHTML="";
+    S.formOffers.forEach((o,i)=>{
+      const d=document.createElement("div"); d.className="shop-form";
+      d.appendChild(formCard(o,i,false));
+      d.insertAdjacentHTML("beforeend",`<div class="price num">$${o.price}</div><button class="buy" type="button" ${o.sold||S.money<o.price||S.forms.length>=3?"disabled":""}>${o.sold?"Filed":"Buy form"}</button>`);
+      d.querySelector(".buy").addEventListener("click",()=>buyForm(i)); frow.appendChild(d);
+    });
+    const crow=$("cleShopRow"); crow.innerHTML="";
+    S.cleOffers.forEach((o,i)=>{
+      const h=HANDS[o.key], level=S.handLevels[o.key]||0, price=clePrice(o.key);
+      const d=document.createElement("div"); d.className="cle-card";
+      const nextLine=level>=5?"Course mastered":`Next level: <b>${h.chips+(level+1)*10}</b> × <b>${h.mult+level+1}</b>`;
+      d.innerHTML=`<div class="cle-name">${h.name}</div><div class="cle-level">${POKER_NAMES[o.key]} · Level ${level}/5</div><div class="cle-effect"><b>${h.chips+level*10}</b> Chips × <b>${h.mult+level}</b> Mult now<br>${nextLine}</div><div class="price num">$${price}</div><button class="buy" type="button" ${o.sold||S.money<price||level>=5?"disabled":""}>${o.sold?"Completed":"Take course"}</button>`;
+      d.querySelector(".buy").addEventListener("click",()=>buyCle(i)); crow.appendChild(d);
+    });
     const sj = $("shopJokers"); sj.innerHTML="";
     if (!S.jokers.length){
       sj.innerHTML = '<div class="owned-label">No counsel retained yet.</div>';
@@ -1115,6 +1282,7 @@ function render(){
       row.appendChild(mkb("\u25b6", ()=>{ S.jokerSel=i; moveJoker(1); },"Move counsel right"));
       d.appendChild(el); d.appendChild(row); sj.appendChild(d);
     });
+    renderFormDocket($("shopFormDocket"),false);
   }
 }
 

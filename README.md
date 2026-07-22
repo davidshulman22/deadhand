@@ -10,6 +10,8 @@ A Balatro-style roguelike where the cards are case files and the blinds are your
 - Hands are renamed for the practice area: a pair is a *Codicil*, three of a kind is *Per Stirpes*, a full house is *Full Testate*, and a straight flush is the *Rule Against Perpetuities* (100 × 8, as it should be).
 - Four matter suits: Probate, Trust, Guardianship, Litigation.
 - Between rounds, spend your retainer on **of counsel** jokers — Stare Decisis rewards playing the same hand type every time, DR-312 voids boss rules, Summary Admin triples small filings.
+- Buy one-use **Forms** that permanently amend, reclassify, strike, certify, or enhance a case file for the run. Your briefcase carries up to three.
+- Take **CLE courses** to permanently level up specific poker hands. Each level adds 10 base Chips and 1 base Mult.
 - Every third blind is a **Boss Audit**: The Disgruntled Heir debuffs a suit, Form 706 costs you a filing, The Dropbox Conflict eats a card per hand.
 - The preview strip runs the real scoring engine, counsel included, before you commit. Random Dropbox audits show the full possible score range.
 - Large, horizontally scrolling case files stay readable instead of shrinking to fit. Display controls include persistent large-text and high-contrast modes.
