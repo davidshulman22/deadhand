@@ -31,7 +31,7 @@ body{
   color:var(--paper); font-family:var(--body); font-size:14px;
   overflow-x:hidden; -webkit-font-smoothing:antialiased; user-select:none;
 }
-#app{display:flex; max-width:1180px; margin:0 auto; gap:14px; padding:14px}
+#app{display:flex; max-width:1400px; margin:0 auto; gap:14px; padding:14px}
 button{font-family:inherit; cursor:pointer}
 .num{font-family:var(--mono); font-variant-numeric:tabular-nums}
 
@@ -71,7 +71,7 @@ button{font-family:inherit; cursor:pointer}
 
 /* jokers */
 #jokerZone{display:flex; align-items:stretch; gap:8px; min-height:118px}
-#jokerRow{display:flex; gap:8px; flex:0 0 auto; width:760px}
+#jokerRow{display:flex; gap:8px; flex:0 0 auto; width:940px}
 #jokerRow .joker,#jokerRow .jslot-empty{flex:1 1 0; width:auto; min-width:0}
 .joker{
   width:118px; min-height:112px; background:linear-gradient(175deg,var(--manila-hi),var(--manila));
@@ -94,7 +94,7 @@ button{font-family:inherit; cursor:pointer}
 #jokerHint{font-size:10px; color:rgba(242,234,214,.45); align-self:flex-end; text-align:right; max-width:110px; line-height:1.5}
 
 /* play area */
-#playZone{flex:1; min-height:170px; width:760px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; position:relative}
+#playZone{flex:1; min-height:170px; width:940px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; position:relative}
 #playedRow{display:flex; gap:10px; min-height:120px; align-items:center}
 #tallyLine{font-family:var(--disp); font-weight:700; font-size:22px; letter-spacing:.02em; min-height:30px; display:flex; align-items:center; gap:10px}
 #tallyLine .tchips{color:var(--chips)} #tallyLine .tmult{color:var(--mult)} #tallyLine .ttotal{color:var(--gold); font-size:28px}
@@ -102,7 +102,7 @@ button{font-family:inherit; cursor:pointer}
 #bossBanner{position:absolute; top:2px; left:50%; transform:translateX(-50%) rotate(-1.5deg); background:#8f2c22; color:#fff; font-family:var(--disp); font-weight:700; letter-spacing:.14em; text-transform:uppercase; font-size:11px; padding:4px 14px; border-radius:2px; box-shadow:0 3px 8px rgba(0,0,0,.4); display:none}
 
 /* preview strip */
-#previewWrap{width:760px; display:flex; justify-content:center}
+#previewWrap{width:940px; display:flex; justify-content:center}
 #preview{
   background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.1);
   border-radius:7px; padding:7px 16px; font-family:var(--disp); font-weight:700; font-size:17px;
@@ -114,36 +114,36 @@ button{font-family:inherit; cursor:pointer}
 #preview .pidle{color:rgba(242,234,214,.35); font-size:12px; font-family:var(--body); font-weight:400}
 
 /* hand */
-#handZone{display:flex; flex-direction:column; gap:10px; padding-bottom:6px; width:760px}
-#handRow{display:flex; gap:8px; justify-content:flex-start; min-height:132px}
+#handZone{display:flex; flex-direction:column; gap:10px; padding-bottom:6px; width:940px}
+#handRow{display:flex; gap:6px; justify-content:flex-start; min-height:168px}
 .card{
-  width:88px; height:124px; flex:0 0 88px; position:relative; cursor:pointer;
+  width:112px; height:158px; flex:0 0 112px; position:relative; cursor:pointer;
   transition:transform .13s ease, box-shadow .13s ease;
   filter:drop-shadow(0 3px 6px rgba(0,0,0,.4));
 }
 .card .folder{
-  position:absolute; inset:0; top:9px; background:linear-gradient(178deg,var(--manila-hi),var(--manila) 60%);
-  border:1px solid var(--manila-edge); border-radius:5px; color:var(--ink);
+  position:absolute; inset:0; top:11px; background:linear-gradient(178deg,var(--manila-hi),var(--manila) 60%);
+  border:1px solid var(--manila-edge); border-radius:6px; color:var(--ink);
 }
 .card .tab{
-  position:absolute; top:0; left:7px; width:38px; height:16px; background:var(--manila-tab);
-  border:1px solid var(--manila-edge); border-bottom:none; border-radius:4px 4px 0 0;
-  font-size:7.5px; letter-spacing:.08em; text-transform:uppercase; color:#6d5f43;
+  position:absolute; top:0; left:9px; width:48px; height:20px; background:var(--manila-tab);
+  border:1px solid var(--manila-edge); border-bottom:none; border-radius:5px 5px 0 0;
+  font-size:9px; letter-spacing:.08em; text-transform:uppercase; color:#6d5f43;
   display:flex; align-items:center; justify-content:center; font-weight:600;
 }
-.card .rank{position:absolute; top:16px; left:9px; font-family:var(--disp); font-weight:800; font-size:26px; line-height:1}
-.card .rname{position:absolute; top:44px; left:9px; right:8px; font-size:8px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-soft); font-weight:600}
+.card .rank{position:absolute; top:20px; left:11px; font-family:var(--disp); font-weight:800; font-size:33px; line-height:1}
+.card .rname{position:absolute; top:56px; left:11px; right:10px; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-soft); font-weight:600}
 .card .seal{
-  position:absolute; bottom:8px; right:8px; width:30px; height:30px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center; font-family:var(--disp); font-weight:800; font-size:15px; color:#fff;
+  position:absolute; bottom:10px; right:10px; width:38px; height:38px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-family:var(--disp); font-weight:800; font-size:19px; color:#fff;
   box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);
 }
-.card .cchip{position:absolute; bottom:11px; left:9px; font-family:var(--mono); font-size:9.5px; color:#7a6c4e}
-.card.sel{transform:translateY(-16px)}
+.card .cchip{position:absolute; bottom:14px; left:11px; font-family:var(--mono); font-size:12px; color:#7a6c4e}
+.card.sel{transform:translateY(-20px)}
 .card.sel .folder{outline:2.5px solid var(--gold)}
 .card.debuffed .folder{background:#a89f8d; filter:grayscale(.7)}
-.card.debuffed::after{content:"DEBUFFED"; position:absolute; top:52px; left:50%; transform:translateX(-50%) rotate(-12deg); font-size:8px; font-weight:800; letter-spacing:.1em; color:#8f2c22; border:1.5px solid #8f2c22; padding:1px 4px; border-radius:2px; background:rgba(255,255,255,.65)}
-.card.eaten::after{content:"EATEN BY DROPBOX"; position:absolute; top:50px; left:50%; transform:translateX(-50%) rotate(-10deg); font-size:6.5px; font-weight:800; letter-spacing:.08em; color:#8f2c22; border:1.5px solid #8f2c22; padding:1px 3px; border-radius:2px; background:rgba(255,255,255,.75); white-space:nowrap}
+.card.debuffed::after{content:"DEBUFFED"; position:absolute; top:66px; left:50%; transform:translateX(-50%) rotate(-12deg); font-size:10px; font-weight:800; letter-spacing:.1em; color:#8f2c22; border:1.5px solid #8f2c22; padding:2px 5px; border-radius:2px; background:rgba(255,255,255,.65)}
+.card.eaten::after{content:"EATEN BY DROPBOX"; position:absolute; top:64px; left:50%; transform:translateX(-50%) rotate(-10deg); font-size:8.5px; font-weight:800; letter-spacing:.08em; color:#8f2c22; border:1.5px solid #8f2c22; padding:1px 4px; border-radius:2px; background:rgba(255,255,255,.75); white-space:nowrap}
 .card.dealin{animation:dealin .34s cubic-bezier(.2,.8,.3,1.12) backwards}
 @keyframes dealin{from{opacity:0; transform:translateX(72px) translateY(-10px) rotate(5deg)}}
 .card.flyout{animation:flyout .26s ease-in forwards; pointer-events:none}
@@ -1082,7 +1082,10 @@ $("btnNext").addEventListener("click", nextRound);
 function fitZoom(){
   const w = window.innerWidth;
   if (w <= 900){ document.body.style.zoom = ""; return; }
-  document.body.style.zoom = Math.max(1, Math.min(1.35, w / 1208, window.innerHeight / 765));
+  // Board's natural size is ~1400w x ~880h. Scale it to fill the window
+  // (down when cramped, up to 1.7x on big screens) so cards stay as large as possible.
+  const z = Math.min(w / 1230, window.innerHeight / 880);
+  document.body.style.zoom = Math.max(0.62, Math.min(1.7, z));
 }
 window.addEventListener("resize", fitZoom);
 fitZoom();
