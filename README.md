@@ -11,7 +11,8 @@ A Balatro-style roguelike where the cards are case files and the blinds are your
 - Four matter suits: Probate, Trust, Guardianship, Litigation.
 - Between rounds, spend your retainer on **of counsel** jokers — Stare Decisis rewards playing the same hand type every time, DR-312 voids boss rules, Summary Admin triples small filings.
 - Every third blind is a **Boss Audit**: The Disgruntled Heir debuffs a suit, Form 706 costs you a filing, The Dropbox Conflict eats a card per hand.
-- The preview strip is exact — it runs the real scoring engine, jokers included, before you commit.
+- The preview strip runs the real scoring engine, counsel included, before you commit. Random Dropbox audits show the full possible score range.
+- Large, horizontally scrolling case files stay readable instead of shrinking to fit. Display controls include persistent large-text and high-contrast modes.
 - Survive Ante 8 and the score overflows to `naneinf`.
 
 ## Controls
@@ -26,6 +27,8 @@ A Balatro-style roguelike where the cards are case files and the blinds are your
 | `S` | sell selected counsel |
 | `N` / `E` | leave shop / reroll |
 | `M` / `?` | mute / rules |
+
+The interface is fully keyboard-operable. On smaller screens, case files and counsel scroll within their own rows without forcing the page itself to scroll sideways.
 
 Mouse works for everything too. Stats (runs, wins, best ante) are stored only in your own browser.
 
