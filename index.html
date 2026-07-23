@@ -134,7 +134,7 @@ button.form-card{cursor:pointer}.form-card .fname{font-weight:950;font-size:.94r
 .card.sel{transform:translateY(-17px)}.card.sel .folder{border-color:var(--gold);box-shadow:0 0 0 3px #fff}.card.sel .selected-mark{display:grid}
 .card.debuffed .folder{background:#b3ac9e;filter:grayscale(.7)}
 .card.debuffed::after,.card.eaten::after{position:absolute;top:48%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);z-index:4;font-size:.78rem;font-weight:950;letter-spacing:.08em;color:#8f2119;border:3px solid #8f2119;padding:5px 8px;border-radius:4px;background:rgba(255,255,255,.9);white-space:nowrap}
-.card.debuffed::after{content:"DEBUFFED"}.card.eaten::after{content:"DROPBOX ATE IT"}
+.card.debuffed::after{content:"DEBUFFED"}.card.eaten::after{content:"ORIGINAL MISSING"}
 .card.dragging,.joker.dragging{z-index:30;transition:none;cursor:grabbing;filter:drop-shadow(0 12px 18px rgba(0,0,0,.58))}
 .card.dealin{animation:dealin .34s cubic-bezier(.2,.8,.3,1.12) backwards}@keyframes dealin{from{opacity:0;transform:translateX(72px) translateY(-10px) rotate(5deg)}}
 .card.flyout{animation:flyout .26s ease-in forwards;pointer-events:none}@keyframes flyout{to{opacity:0;transform:translateY(90px) rotate(12deg) scale(.92)}}
@@ -183,7 +183,7 @@ kbd{display:inline-block;background:#071c16;border:1px solid rgba(255,255,255,.2
 .obox table{width:100%;border-collapse:collapse;font-size:.94rem;margin:12px 0 18px}.obox td{padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.12)}
 .obox td:nth-child(2){color:var(--paper-muted)}.obox td:last-child{text-align:right;font-family:var(--mono)}.obox td b{color:var(--chips)}.obox td i{color:var(--mult);font-style:normal}
 .obox .keys{font: .9rem/2 var(--mono);color:var(--paper)}.obox .keys b{color:var(--gold);display:inline-block;min-width:70px}
-.naneinf{font:900 2.8rem var(--mono);color:var(--good);animation:naneglitch 1.2s steps(2) infinite}@keyframes naneglitch{50%{opacity:.75;letter-spacing:.1em;color:var(--chips)}}
+.final-order{font:900 2.3rem var(--mono);color:var(--good);letter-spacing:.08em}
 
 body.large-text{font-size:18px}
 body.large-text .card{width:clamp(146px,12vw,174px);flex-basis:clamp(146px,12vw,174px)}
@@ -372,7 +372,7 @@ body.high-contrast .surface,body.high-contrast #playZone,body.high-contrast #pre
       <tr><td>Codicil</td><td>pair</td><td><b>10</b> × <i>2</i></td></tr>
       <tr><td>Pro Se</td><td>high card</td><td><b>5</b> × <i>1</i></td></tr>
     </table>
-    <p>Only the cards that make the hand score. Card chips = face value (A=11, faces=10). Matters: <b style="color:#dbc8a5">Probate</b>, <b style="color:#8ecaff">Trust</b>, <b style="color:#d2a7ff">Guardianship</b>, <b style="color:#ff998e">Litigation</b>. The preview uses the real calculator, counsel included. Dropbox audits show a possible score range because the excluded card is random. Card-triggered counsel resolves with each card; other counsel resolves from left to right.</p>
+    <p>Only the cards that make the hand score. Card chips = face value (A=11, faces=10). Matters: <b style="color:#dbc8a5">Probate</b>, <b style="color:#8ecaff">Trust</b>, <b style="color:#d2a7ff">Guardianship</b>, <b style="color:#ff998e">Litigation</b>. The preview uses the real calculator, counsel included. Missing Original Will audits show a possible score range because the excluded card is random. Card-triggered counsel resolves with each card; other counsel resolves from left to right.</p>
     <p><b>Forms</b> are one-use filings carried in your briefcase. During a matter, select exactly one case file and choose a form to permanently amend, reclassify, strike, certify, or enhance it for the run. <b>CLE courses</b> permanently level up a poker hand; every level adds 10 base Chips and 1 base Mult.</p>
     <div class="keys">
       <b>1–8</b> toggle card &nbsp; <b>Enter</b> file &nbsp; <b>X</b> discard<br>
@@ -423,14 +423,14 @@ const JOKERS = [
    eff:"<i>×1.5 Mult</i>", flav:"“I ran the numbers. It says you are wrong.”"},
   {id:"paralegal", name:"The Paralegal", price:5,
    eff:"<i>+4 Mult</i> per Guardianship card scored", flav:"Drafts everything. The attorney of record signs."},
-  {id:"clio", name:"Clio Automation", price:6,
-   eff:"Retriggers the <b>first</b> scored card", flav:"Click2File."},
+  {id:"docket", name:"Docket Automation", price:6,
+   eff:"Retriggers the <b>first</b> scored card", flav:"Filed, served, and calendared."},
   {id:"homestead", name:"Homestead", price:5,
    eff:"Probate cards give <b>+25 Chips</b> when scored", flav:"Exempt from forced sale. Art. X, §4."},
   {id:"summary", name:"Summary Admin", price:6,
    eff:"<i>×3 Mult</i> if filing has 3 or fewer cards", flav:"Under $75k or dead two years. Fast lane."},
   {id:"precedent", name:"Stare Decisis", price:4,
-   eff:"<i>+2 Mult</i> per consecutive filing of the same hand type", flav:"One strategy. Every game.", counter:true},
+   eff:"<i>+2 Mult</i> per consecutive filing of the same hand type", flav:"The prior decision controls.", counter:true},
   {id:"iota", name:"IOTA Interest", price:4,
    eff:"<u>+$2</u> per unused filing at round end", flav:"Trust accounting, but it pays you."},
   {id:"billable", name:"Billable Hour", price:6,
@@ -439,8 +439,8 @@ const JOKERS = [
    eff:"Kings give <b>+20 Chips</b>, <i>+2 Mult</i>", flav:"Mortmain. The decedent still controls."},
   {id:"elective", name:"Elective Share", price:6,
    eff:"<b>×1.3 Chips</b>", flav:"Thirty percent. Off the top. §732.2065."},
-  {id:"hyperfocus", name:"Hyperfocus", price:7,
-   eff:"<i>×3 Mult</i> on the first filing each round", flav:"It gets done at 11pm and it's brilliant."},
+  {id:"priority", name:"Priority Claim", price:7,
+   eff:"<i>×3 Mult</i> on the first filing each round", flav:"Class 1 gets paid first."},
   {id:"feesimple", name:"Fee Simple Absolute", price:10,
    eff:"<i>×4 Mult</i>", flav:"The highest estate known to law."},
   {id:"dr312", name:"DR-312", price:6,
@@ -462,7 +462,7 @@ const BOSSES = [
   {id:"heir", name:"The Disgruntled Heir", desc:s=>`Cards of one matter type (${s}) are debuffed — no chips, no triggers.`},
   {id:"f706", name:"Form 706", desc:()=>"Estate tax paperwork: one fewer filing this round."},
   {id:"sol", name:"Statute of Limitations", desc:()=>"Time bars you: only 1 discard this round."},
-  {id:"dropbox", name:"The Dropbox Conflict", desc:()=>"Every filing, one random scoring card gets eaten."},
+  {id:"original", name:"Missing Original Will", desc:()=>"Every filing, one random scoring card is excluded."},
   {id:"objection", name:"Objection, Sustained", desc:()=>"Your first filing scores half."},
   {id:"auditor", name:"The Auditor", desc:()=>"Overhead is 25% higher. Bring receipts."},
 ];
@@ -603,7 +603,7 @@ function computeScore(played, opts){
   scoringCards.forEach((c, i)=>{
     if (eatenId && c.id===eatenId){ steps.push({type:"card", card:c, eaten:true}); return; }
     if (isDebuffed(c)){ steps.push({type:"card", card:c, debuffed:true}); return; }
-    const triggers = 1 + (has("clio") && i===0 ? 1 : 0);
+    const triggers = 1 + (has("docket") && i===0 ? 1 : 0);
     for (let t=0; t<triggers; t++){
       let cCh = c.rank.chips+(c.bonusChips||0), cMu = c.bonusMult||0;
       if (has("homestead") && c.suit.k==="P") cCh += 25;
@@ -626,7 +626,7 @@ function computeScore(played, opts){
         if (bonus>0){ mu=bonus; note=`+${bonus} Mult`; }
         break;
       }
-      case "hyperfocus": if (firstFiling){ xm=3; note="×3 Mult"; } break;
+      case "priority": if (firstFiling){ xm=3; note="×3 Mult"; } break;
       case "billable": { const b=Math.floor(S.money/5); if(b>0){ mu=b; note=`+${b} Mult`; } break; }
       case "calc": xm=1.5; note="×1.5 Mult"; break;
       case "feesimple": xm=4; note="×4 Mult"; break;
@@ -666,7 +666,7 @@ async function playHand(){
   if (!sel.length || S.filings<=0) return;
   animating = true;
   let eatenId = null;
-  if (S.boss && S.boss.id==="dropbox" && !S.bossDisabled){
+  if (S.boss && S.boss.id==="original" && !S.bossDisabled){
     const ev = evaluate(sel);
     const pool = ev.scoring;
     eatenId = pool[Math.floor(Math.random()*pool.length)].id;
@@ -837,8 +837,8 @@ function showWin(){
   const best = store(); best.wins++; best.runs++; best.bestAnte=8; save(best);
   $("endBox").innerHTML = `
     <h2 style="color:var(--good)">ESTATE CLOSED</h2>
-    <div class="naneinf">naneinf</div>
-    <p>All eight antes discharged. Fees earned: <b class="num" style="color:var(--gold)">$${S.money}</b>. The file goes to the closed drawer, the score overflows, and no further accounting shall be required.</p>
+    <div class="final-order">FINAL ORDER ENTERED</div>
+    <p>All eight antes discharged. Fees earned: <b class="num" style="color:var(--gold)">$${S.money}</b>. The file goes to the closed drawer, and no further accounting shall be required.</p>
     <p style="color:rgba(242,234,214,.55)">Estates closed: ${best.wins} · Runs: ${best.runs}</p>
     <div style="display:flex;gap:10px">
       <button class="abtn" style="background:linear-gradient(180deg,#5cb87a,#3d8a58)" onclick="hideEnd();goEndless()">Endless (keep going)</button>
@@ -934,7 +934,7 @@ function saveRun(){
   if (!S || S.phase==="over" || S.phase==="won") return;
   try{
     localStorage.setItem("deadhand-run", JSON.stringify({
-      v:1, ante:S.ante, blindIdx:S.blindIdx, money:S.money,
+      v:2, ante:S.ante, blindIdx:S.blindIdx, money:S.money,
       jokerIds:S.jokers.map(j=>j.id), jokerSel:S.jokerSel,
       deck:S.deck.map(encCard), hand:S.hand.map(encCard),
       filings:S.filings, discards:S.discards, score:S.score, target:S.target,
@@ -954,7 +954,7 @@ function clearRun(){ try{ localStorage.removeItem("deadhand-run"); }catch(e){} }
 function loadRun(){
   try{
     const d = JSON.parse(localStorage.getItem("deadhand-run"));
-    if (!d || d.v!==1 || (d.phase!=="play" && d.phase!=="shop")) return false;
+    if (!d || d.v!==2 || (d.phase!=="play" && d.phase!=="shop")) return false;
     S = {
       ante:d.ante, blindIdx:d.blindIdx, money:d.money,
       jokers:(d.jokerIds||[]).map(id=>({...JOKERS.find(j=>j.id===id)})).filter(j=>j.id),
@@ -1162,10 +1162,10 @@ function render(){
   const pv = $("preview");
   if (prev){
     const pname=`${prev.ev.def.name} · ${POKER_NAMES[prev.ev.key]}`;
-    if (S.boss&&S.boss.id==="dropbox"&&!S.bossDisabled){
+    if (S.boss&&S.boss.id==="original"&&!S.bossDisabled){
       const totals=prev.ev.scoring.map(c=>computeScore(sel,{dry:true,eatenId:c.id,firstFiling:S.filingsUsed===0}).total);
       const lo=Math.min(...totals), hi=Math.max(...totals);
-      pv.innerHTML=`<span class="pname">${pname}</span><span class="peq">Audit range</span><span class="ptotal num">${lo===hi?fmt(lo):`${fmt(lo)}–${fmt(hi)}`}</span><span class="paudit">Dropbox will exclude one random scoring card.</span>`;
+      pv.innerHTML=`<span class="pname">${pname}</span><span class="peq">Audit range</span><span class="ptotal num">${lo===hi?fmt(lo):`${fmt(lo)}–${fmt(hi)}`}</span><span class="paudit">The missing original will exclude one random scoring card.</span>`;
     } else {
       pv.innerHTML = `<span class="pname">${pname}</span>
         <span class="pchips num">${fmt(prev.chips)}</span><span class="peq">×</span>
