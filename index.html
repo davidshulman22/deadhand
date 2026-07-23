@@ -1290,7 +1290,7 @@ function render(){
 document.addEventListener("keydown", e=>{
   if (e.metaKey||e.ctrlKey||e.altKey) return;
   const k = e.key;
-  if ((k==="Enter"||k===" ") && e.target.closest(".card,.joker")) return;
+  if ((k==="Enter"||k===" ") && e.target.closest(".card,.joker,.form-card")) return;
   if ($("ovHelp").classList.contains("show")){ if(k==="Escape"||k==="?") closeHelp(); return; }
   if ($("ovEnd").classList.contains("show")){ if(k==="r"||k==="R"){ hideEnd(); newRun(); } return; }
   if (S.phase==="shop"){
